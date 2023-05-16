@@ -1,0 +1,2 @@
+all:
+	g++ -Iinclude/SDL2 -Ilib -o main src/*.cpp -lmingw32 -lSDL2main
