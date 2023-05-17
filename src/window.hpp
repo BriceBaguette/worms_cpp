@@ -8,16 +8,20 @@ private:
     SDL_Window* gWindow = NULL;
         
     //The surface contained by the window
-    SDL_Surface* gScreenSurface = NULL;
+    SDL_Renderer* renderer = NULL;
 
+    //the surface of the sprite
     SDL_Surface* gSprite = NULL;
 
+    bool quit = false;
 public:
     WindowApp();
-    ~WindowApp();
     bool init();
     bool loadMedia();
     void close();
+    void render();
+    void event();
+    bool getQuit();
 };
 
 

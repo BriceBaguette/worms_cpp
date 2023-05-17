@@ -9,6 +9,10 @@ and may not be redistributed without written permission.*/
 
 int main( int argc, char* args[] )
 {
-    new WindowApp();
+    WindowApp app;
+    while(!app.getQuit()){
+        app.render();
+        app.event();
+    }
     return 0;
 }

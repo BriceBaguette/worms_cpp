@@ -6,6 +6,7 @@ WindowApp::WindowApp()
     if( !init() )
     {
         printf( "Failed to initialize!\n" );
+        exit(-1);
     }
     else
     {
@@ -13,20 +14,9 @@ WindowApp::WindowApp()
         if( !loadMedia() )
         {
             printf( "Failed to load media!\n" );
-        }
-        else
-        {
-            //Apply the image
-            SDL_BlitSurface( gSprite, NULL, gScreenSurface, NULL );
-            //Update the surface
-            SDL_UpdateWindowSurface( gWindow );
-            //Hack to get window to stay up
-            SDL_Event e; bool quit = false; while( quit == false ){ while( SDL_PollEvent( &e ) ){ if( e.type == SDL_QUIT ) quit = true; } }
+            exit(-1);
         }
     }
-
-    //Free resources and close SDL
-    close();
 }
 
 bool WindowApp::init()
@@ -44,17 +34,13 @@ bool WindowApp::init()
         else
         {
             // Create window
-            gWindow = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+            gWindow = SDL_CreateWindow("Worms", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
             if (gWindow == NULL)
             {
                 printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
                 success = false;
             }
-            else
-            {
-                // Get window surface
-                gScreenSurface = SDL_GetWindowSurface(gWindow);
-            }
+            renderer = SDL_CreateRenderer(gWindow, -1, 0);
         }
 
         return success;
@@ -83,10 +69,40 @@ void WindowApp::close()
     SDL_FreeSurface( gSprite );
     gSprite = NULL;
 
+    //Destroy renderer
+    SDL_DestroyRenderer( renderer );
+    renderer = NULL;
+
     //Destroy window
     SDL_DestroyWindow( gWindow );
     gWindow = NULL;
 
     //Quit SDL subsystems
     SDL_Quit();
+}
+
+void WindowApp::render()
+{
+    // Clear the screen
+    SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 255);
+    SDL_RenderClear(this->renderer);
+
+    // Render the scene
+    // ...
+
+    // Update the screen
+    SDL_RenderPresent(this->renderer);
+}
+
+void WindowApp::event(){
+    SDL_Event e;  
+    while( SDL_PollEvent( &e ) )
+        { 
+            if( e.type == SDL_QUIT ) 
+                    this->quit = true;
+        } 
+}
+
+bool WindowApp::getQuit(){
+    return this->quit;
 }
