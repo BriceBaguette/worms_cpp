@@ -1,17 +1,32 @@
 #include "worm.hpp"
 
+Worm::Worm(){
+    if(!Worm::loadMedia()){
+        exit(-1);
+    }
+}
 
-Worm::event(){
+
+void Worm::event(){
 
 }
 
-Worm::render(){
-    
+void Worm::render(){
+
 }
 
-Worm::worm(){
-}
+bool Worm::loadMedia(){
+// Loading success flag
+    bool success = true;
 
-Worm::loadMedia(){
+    // Load splash image
+    wormSprite = SDL_LoadBMP("./assets/assets/sprites/worm_rest.bmp");
+    if (wormSprite == NULL)
+    {
+        printf("Unable to load image %s! SDL Error: %s\n", "./assets/assets/sprites/worm_rest.bmp", SDL_GetError());
+        success = false;
+    }
+
+    return success;
 
 }

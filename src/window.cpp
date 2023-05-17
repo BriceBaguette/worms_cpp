@@ -8,15 +8,6 @@ WindowApp::WindowApp()
         printf( "Failed to initialize!\n" );
         exit(-1);
     }
-    else
-    {
-        //Load media
-        if( !loadMedia() )
-        {
-            printf( "Failed to load media!\n" );
-            exit(-1);
-        }
-    }
 }
 
 bool WindowApp::init()
@@ -45,22 +36,6 @@ bool WindowApp::init()
 
         return success;
     }
-}
-
-bool WindowApp::loadMedia()
-{
-    // Loading success flag
-    bool success = true;
-
-    // Load splash image
-    gSprite = SDL_LoadBMP("./assets/assets/sprites/worm_rest.bmp");
-    if (gSprite == NULL)
-    {
-        printf("Unable to load image %s! SDL Error: %s\n", "./assets/assets/sprites/worm_rest.bmp", SDL_GetError());
-        success = false;
-    }
-
-    return success;
 }
 
 void WindowApp::close()

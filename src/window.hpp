@@ -17,7 +17,6 @@ private:
 public:
     WindowApp();
     bool init();
-    bool loadMedia();
     void close();
     void render();
     void event();
