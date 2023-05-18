@@ -8,6 +8,7 @@ WindowApp::WindowApp()
         printf( "Failed to initialize!\n" );
         exit(-1);
     }
+    this->worm1 = new Worm(this->renderer);
 }
 
 bool WindowApp::init()
@@ -59,11 +60,11 @@ void WindowApp::close()
 void WindowApp::render()
 {
     // Clear the screen
-    SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(this->renderer, 0, 0, 255, 255);
     SDL_RenderClear(this->renderer);
 
     // Render the scene
-    // ...
+    this->worm1->render(this->renderer);
 
     // Update the screen
     SDL_RenderPresent(this->renderer);

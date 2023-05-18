@@ -7,12 +7,13 @@ and may not be redistributed without written permission.*/
 #include "window.hpp"
 
 
-int main( int argc, char* args[] )
+int main()
 {
     WindowApp app;
     while(!app.getQuit()){
         app.render();
         app.event();
+        SDL_Delay(33);
     }
     return 0;
 }

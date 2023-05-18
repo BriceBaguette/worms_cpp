@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include "worm.hpp"
 #include "defs.hpp"
 
 class WindowApp
@@ -14,6 +15,8 @@ private:
     SDL_Surface* gSprite = NULL;
 
     bool quit = false;
+
+    Worm* worm1 = NULL;
 public:
     WindowApp();
     bool init();

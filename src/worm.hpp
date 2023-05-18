@@ -4,14 +4,15 @@
 
 class Worm {
     private:
-        int x_pos = 200;
-        int y_pos = 200;
-        SDL_Surface* wormSprite=NULL;
+        int x = 200;
+        int y = 200;
+        SDL_Texture* wormSprite=NULL;
     
     public:
 
-        Worm();
-        void render();
+        Worm(SDL_Renderer *renderer);
+        void render(SDL_Renderer *renderer);
         void event();
-        bool loadMedia();
+        bool loadMedia(SDL_Renderer *renderer);
+        void close();
 };
