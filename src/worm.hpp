@@ -14,7 +14,7 @@ class Worm {
         std::vector<SDL_Texture*> movingSprite;
         SDL_Texture* fallingSprite = NULL;
         SDL_Texture* jetpackSprite = NULL;
-        int vSpeed = 0;
+        int vSpeed = WORM_FALLING_SPEED;
         int hSpeed = 0;       
         bool flip = false;
     

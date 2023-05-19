@@ -17,8 +17,8 @@ bool Worm::checkCollision(const std::list<SDL_Point>& points) {
     SDL_Rect rect = {this->x, this->y,WORM_WIDTH, WORM_HEIGHT};
     for (const SDL_Point& point : points) {
         if (point.x >= rect.x && point.x < (rect.x + rect.w) &&
-            point.y >= rect.y && point.y < (rect.y + rect.h)) {
-            this->y = point.y + rect.y;
+            point.y >= rect.y && point.y < (rect.y + rect.h)) {            printf("collision occured\n");
+            this->y = point.y - WORM_HEIGHT;
             return true;  // Collision detected
         }
     }
