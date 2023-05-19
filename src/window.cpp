@@ -9,6 +9,7 @@ WindowApp::WindowApp()
         exit(-1);
     }
     this->worm1 = new Worm(this->renderer);
+    this->ground = new Ground();
 }
 
 bool WindowApp::init()
@@ -41,9 +42,6 @@ bool WindowApp::init()
 
 void WindowApp::close()
 {
-    // Deallocate surface
-    SDL_FreeSurface(gSprite);
-    gSprite = NULL;
 
     // Destroy renderer
     SDL_DestroyRenderer(renderer);
@@ -65,6 +63,7 @@ void WindowApp::render()
 
     // Render the scene
     this->worm1->render(this->renderer);
+    this->ground->render(this->renderer);
 
     // Update the screen
     SDL_RenderPresent(this->renderer);

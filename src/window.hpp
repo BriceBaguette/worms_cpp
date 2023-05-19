@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include "worm.hpp"
 #include "defs.hpp"
+#include "ground.hpp"
 
 class WindowApp
 {
@@ -13,6 +14,8 @@ private:
 
     //the surface of the sprite
     SDL_Surface* gSprite = NULL;
+
+    Ground* ground = NULL;
 
     bool quit = false;
 
