@@ -13,10 +13,27 @@ void Worm::setVSPeed(int speed){
     this->vSpeed = speed;
 }
 
-void Worm::update(){
-    if(!(this->x + this->hSpeed < 0 || this->x + this->hSpeed > SCREEN_WIDTH - WORM_WIDTH))
+bool Worm::checkCollision(const std::list<SDL_Point>& points) {
+    SDL_Rect rect = {this->x, this->y,WORM_WIDTH, WORM_HEIGHT};
+    for (const SDL_Point& point : points) {
+        if (point.x >= rect.x && point.x < (rect.x + rect.w) &&
+            point.y >= rect.y && point.y < (rect.y + rect.h)) {            printf("collision occured\n");
+            this->y = point.y - WORM_HEIGHT;
+            return true;  // Collision detected
+        }
+    }
+    return false;  // No collision
+}
+
+void Worm::update(const std::list<SDL_Point>& points){
+    if(!(this->x + this->hSpeed < 0 || this->x + this->hSpeed > SCREEN_WIDTH - WORM_WIDTH) && !(this->vSpeed<0))
         this->x += this->hSpeed;
-    else this->hSpeed = 0;
+    if(checkCollision(points)){
+        this->vSpeed = 0;
+    }
+    else if(!(this->vSpeed<0)){
+        this->vSpeed = WORM_FALLING_SPEED;
+    }
     this->y += this->vSpeed;
 }
 
@@ -35,6 +52,10 @@ void Worm::render(SDL_Renderer *renderer)
             this->flip = false;
         sprite = this->movingSprite.front();
         std::reverse(this->movingSprite.begin(), this->movingSprite.end());
+    }
+
+    if(this->vSpeed > 0){
+        sprite = this->fallingSprite;
     }
 
     SDL_QueryTexture(sprite, nullptr, nullptr, &destinationRect.w, &destinationRect.h);
