@@ -20,6 +20,7 @@ private:
 public:
     WindowApp();
     bool init();
+    void update();
     void close();
     void render();
     void event();

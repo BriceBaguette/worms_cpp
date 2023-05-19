@@ -11,6 +11,7 @@ int main()
 {
     WindowApp app;
     while(!app.getQuit()){
+        app.update();
         app.render();
         app.event();
         SDL_Delay(33);

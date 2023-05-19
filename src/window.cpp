@@ -2,10 +2,10 @@
 
 WindowApp::WindowApp()
 {
-    //Start up SDL and create window
-    if( !init() )
+    // Start up SDL and create window
+    if (!init())
     {
-        printf( "Failed to initialize!\n" );
+        printf("Failed to initialize!\n");
         exit(-1);
     }
     this->worm1 = new Worm(this->renderer);
@@ -41,19 +41,19 @@ bool WindowApp::init()
 
 void WindowApp::close()
 {
-    //Deallocate surface
-    SDL_FreeSurface( gSprite );
+    // Deallocate surface
+    SDL_FreeSurface(gSprite);
     gSprite = NULL;
 
-    //Destroy renderer
-    SDL_DestroyRenderer( renderer );
+    // Destroy renderer
+    SDL_DestroyRenderer(renderer);
     renderer = NULL;
 
-    //Destroy window
-    SDL_DestroyWindow( gWindow );
+    // Destroy window
+    SDL_DestroyWindow(gWindow);
     gWindow = NULL;
 
-    //Quit SDL subsystems
+    // Quit SDL subsystems
     SDL_Quit();
 }
 
@@ -70,15 +70,63 @@ void WindowApp::render()
     SDL_RenderPresent(this->renderer);
 }
 
-void WindowApp::event(){
-    SDL_Event e;  
-    while( SDL_PollEvent( &e ) )
-        { 
-            if( e.type == SDL_QUIT ) 
-                    this->quit = true;
-        } 
+void WindowApp::update()
+{
+    this->worm1->update();
 }
 
-bool WindowApp::getQuit(){
+void WindowApp::event()
+{
+
+    SDL_Event event;
+    while (SDL_PollEvent(&event))
+    {
+
+        switch (event.type)
+        {
+        case SDL_QUIT:
+            this->quit = true;
+            break;
+        case SDL_KEYDOWN:
+            // Keydown event
+            // Check the specific key
+            switch (event.key.keysym.sym)
+            {
+            case SDLK_LEFT:
+                // Move image to the left
+                this->worm1->setHSPeed(-WORM_SPEED_MODIFIER);
+                break;
+            case SDLK_RIGHT:
+                // Move image to the right
+                this->worm1->setHSPeed(WORM_SPEED_MODIFIER);
+                break;
+            default:
+                break;
+            }
+            break;
+        case SDL_KEYUP:
+            // Keyup event
+            // Check the specific key
+            switch (event.key.keysym.sym)
+            {
+            case SDLK_LEFT:
+                this->worm1->setHSPeed(0);
+                break;
+            case SDLK_RIGHT:
+                // Stop animation
+                this->worm1->setHSPeed(0);
+                break;
+            default:
+                break;
+            }
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+bool WindowApp::getQuit()
+{
     return this->quit;
 }
