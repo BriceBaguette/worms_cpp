@@ -14,6 +14,7 @@ public:
     Ground();
     void render(SDL_Renderer *renderer);
     void update();
+    std::list<SDL_Point> getPoints();
     void close();
 };
 

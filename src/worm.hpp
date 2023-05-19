@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 #include "defs.hpp"
-#include <vector>
+#include <list>
 #include <algorithm>
 
 class Worm {
@@ -28,7 +28,10 @@ class Worm {
 
         // Function that manage the game behaviour and display of the worm
         void render(SDL_Renderer *renderer);
-        void update();
+        void update(const std::list<SDL_Point>& points);
+
+        // Function to control worm's behaviour
+        bool checkCollision(const std::list<SDL_Point>& points);
         void setHSPeed(int speed);
         void setVSPeed(int speed);
         void close();

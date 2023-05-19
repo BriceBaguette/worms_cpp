@@ -71,7 +71,7 @@ void WindowApp::render()
 
 void WindowApp::update()
 {
-    this->worm1->update();
+    this->worm1->update(ground->getPoints());
 }
 
 void WindowApp::event()

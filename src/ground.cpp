@@ -33,3 +33,6 @@ void Ground::render(SDL_Renderer *renderer)
         SDL_RenderDrawPoint(renderer, point.x, point.y);
     }
 }
+std::list<SDL_Point> Ground::getPoints(){
+    return this->points;
+}
