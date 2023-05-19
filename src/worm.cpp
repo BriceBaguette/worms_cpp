@@ -16,7 +16,7 @@ void Worm::setVSPeed(int speed){
 bool Worm::checkCollision(const std::list<SDL_Point>& points) {
     SDL_Rect rect = {this->x, this->y,WORM_WIDTH, WORM_HEIGHT};
     for (const SDL_Point& point : points) {
-        if (point.x >= rect.x && point.x <= (rect.x + rect.w)&&
+        if (point.x >= rect.x && point.x < (rect.x + rect.w)&&
             point.y >= rect.y && point.y < (rect.y + rect.h)) {
             this->y = point.y - WORM_HEIGHT;
             return true;  // Collision detected
@@ -33,19 +33,21 @@ void Worm::update(const std::list<SDL_Point>& points){
         this->vSpeed = 0;
     }
     else if(this->vSpeed == 0){
-        this->vSpeed = 4;
+        this->vSpeed = 2;
     }
-    else if((this->vSpeed >=4)){
+    else if((this->vSpeed >=2)){
         this->vSpeed = WORM_FALLING_SPEED;
     }
 }
 
 void Worm::render(SDL_Renderer *renderer)
 {   
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     SDL_Rect destinationRect = {this->x, this->y, WORM_WIDTH, WORM_HEIGHT };
     SDL_Texture* sprite = NULL;
     // Set the position and dimensions of the image
-    if(this->hSpeed == 0 && (this->vSpeed == 0 || this->vSpeed == 4)){
+    if(this->hSpeed == 0 && (this->vSpeed == 0 || this->vSpeed == 2)){
         sprite = this->restSprite;
     }
     if(this->hSpeed != 0) {
@@ -89,8 +91,7 @@ SDL_Texture *Worm::loadMedia(SDL_Renderer *renderer, const char *path)
         std::cout << "Failed to load image: " << IMG_GetError() << std::endl;
         exit(-1);
     }
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     // Create texture from surface
     SDL_Surface* resizedSurface = SDL_CreateRGBSurface(0, WORM_WIDTH, WORM_HEIGHT, 32, 0, 0, 0, 0);
     SDL_BlitScaled(imageSurface, nullptr, resizedSurface, nullptr);
