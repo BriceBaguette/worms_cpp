@@ -39,13 +39,25 @@ void Worm::setAiming(bool aiming, bool upwards){
     this->aiming_upwards = upwards;
 }
 
-void Worm::fire(){
+std::tuple<bool, double, SDL_Rect, SDL_Rect> Worm::fire(){
+    double angle = this->weapon_angle;
+    SDL_Rect worm_rect = {this->x, this->y, WORM_WIDTH, WORM_HEIGHT };
+    int mod = this->flip ? -1 : 1;
+    int weapon_center_x = this->x + WORM_WIDTH/2 + mod*WORM_WEAPON_CENTERS_DISTANCE_X;
+    int weapon_center_y = this->y + WORM_HEIGHT/2 + WORM_WEAPON_CENTERS_DISTANCE_Y;
+    int weapon_x = weapon_center_x - WEAPON_WIDTH/2;
+    int weapon_y = weapon_center_y - WEAPON_HEIGHT/2;
+    SDL_Rect weapon_rect = {weapon_x, weapon_y, WEAPON_WIDTH, WEAPON_HEIGHT };
+    std::tuple<bool, double, SDL_Rect, SDL_Rect> ret_val = {this->flip, angle, worm_rect, weapon_rect};
+
     this->weapon_amunition_map[this->weapon]--;
     this->weapon_angle = 0;
     if (!this->weapon.compare("bazooka"))
         this->weapon_reload_time_map[weapon] = BAZOOKA_RELOADING_DELAY * FRAMERATE;
     else
         this->weapon_reload_time_map[weapon] = SHOTGUN_RELOADING_DELAY * FRAMERATE;
+
+    return ret_val;
 }
 
 bool Worm::isWeaponReady(){
@@ -64,6 +76,15 @@ bool Worm::checkCollision(const std::list<SDL_Point>& points) {
         }
     }
     return false;  // No collision
+}
+
+SDL_Rect Worm::getHitbox(){
+    SDL_Rect rect = {this->x, this->y,WORM_WIDTH, WORM_HEIGHT};
+    return rect;
+}
+
+int Worm::getHealth(){
+    return this->health;
 }
 
 void Worm::update(const std::list<SDL_Point>& points){

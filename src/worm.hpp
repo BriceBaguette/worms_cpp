@@ -5,6 +5,7 @@
 #include "defs.hpp"
 #include <list>
 #include <map>
+#include <tuple>
 #include <algorithm>
 
 class Worm {
@@ -42,6 +43,8 @@ class Worm {
 
         // Function to control worm's behaviour
         bool checkCollision(const std::list<SDL_Point>& points);
+        SDL_Rect getHitbox();
+        int getHealth();
         bool isWeaponReady();
         int getWeaponAmunition();
         double getWeaponAngle();
@@ -51,6 +54,6 @@ class Worm {
         void setHSPeed(int speed);
         void setVSPeed(int speed);
         void setAiming(bool aiming, bool upwards);
-        void fire();
+        std::tuple<bool, double, SDL_Rect, SDL_Rect> fire();
         void close();
 };

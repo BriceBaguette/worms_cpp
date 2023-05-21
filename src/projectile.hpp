@@ -5,20 +5,30 @@
 #include <SDL2/SDL_image.h>
 #include <iostream>
 #include <cmath>
+#include <tuple>
+#include <list>
 #include "defs.hpp"
 
 class Projectile{
 
     public:
-        virtual int get_radius_damage() = 0;
+        virtual std::list<SDL_Point> getExplosionZone() = 0;
         virtual void render(SDL_Renderer *renderer);
-        virtual void update();
+        virtual bool update();
+        virtual bool checkCollision(const std::list<SDL_Point>& points);
+        virtual bool checkCollision(const SDL_Rect& hitbox);
+        virtual int getDamage();
+
+        virtual ~Projectile() {
+        SDL_DestroyTexture(sprite);
+        }
 
     protected:
-        double x;
-        double y;
+        double center_x;
+        double center_y;
         double speed;
         double angle;
+        bool flip;
         double h_speed;
         double v_speed;
         int mass;
@@ -26,22 +36,27 @@ class Projectile{
         int width;
         int height;
         SDL_Texture* sprite;
+        int damage_points;
+        int explosion_radius;
+        std::list<SDL_Point> explosion_zone_template;
 
         virtual SDL_Texture* loadMedia(SDL_Renderer *renderer, const char* path, int width, int height);
+        virtual void computeStartingPosition(std::tuple<bool, double, SDL_Rect, SDL_Rect>& fire_params);
+        virtual void setExplosionZoneTemplate(int explosion_radius);
 };
 
 class Bullet : public Projectile{
 
     public:
-        Bullet(int x, int y, int speed, int angle, SDL_Renderer *renderer);
-        int get_radius_damage() override;
+        Bullet(std::tuple<bool, double, SDL_Rect, SDL_Rect>& , double speed, SDL_Renderer *renderer);
+        std::list<SDL_Point> getExplosionZone() override;
 };
 
 class Rocket : public Projectile{
 
     public:
-        Rocket(int x, int y, int speed, int angle, SDL_Renderer *renderer);
-        int get_radius_damage() override;
+        Rocket(std::tuple<bool, double, SDL_Rect, SDL_Rect>& fire_params, double speed, SDL_Renderer *renderer);
+        std::list<SDL_Point> getExplosionZone() override;
 };
 
 #endif

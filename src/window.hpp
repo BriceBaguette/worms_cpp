@@ -2,6 +2,7 @@
 #include "worm.hpp"
 #include "defs.hpp"
 #include "ground.hpp"
+#include "projectile.hpp"
 
 class WindowApp
 {
@@ -30,6 +31,8 @@ private:
     bool curr_worm_has_aimed = false;
 
     int shooting_power = MIN_SHOOTING_POWER;
+
+    Projectile* curr_projectile = nullptr;
 
 public:
     WindowApp();
