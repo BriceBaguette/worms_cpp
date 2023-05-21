@@ -42,6 +42,16 @@ void Worm::setAiming(bool aiming, bool upwards){
 void Worm::fire(){
     this->weapon_amunition_map[this->weapon]--;
     this->weapon_angle = 0;
+    if (!this->weapon.compare("bazooka"))
+        this->weapon_reload_time_map[weapon] = BAZOOKA_RELOADING_DELAY * FRAMERATE;
+    else
+        this->weapon_reload_time_map[weapon] = SHOTGUN_RELOADING_DELAY * FRAMERATE;
+}
+
+bool Worm::isWeaponReady(){
+    if(this->weapon_reload_time_map[weapon] == 0)
+        return true;
+    return false;
 }
 
 bool Worm::checkCollision(const std::list<SDL_Point>& points) {
@@ -69,6 +79,11 @@ void Worm::update(const std::list<SDL_Point>& points){
     else if((this->vSpeed >=2)){
         this->vSpeed = WORM_FALLING_SPEED;
     }
+
+    if (this->weapon_reload_time_map["bazooka"] > 0)
+        this->weapon_reload_time_map["bazooka"]--;
+    if (this->weapon_reload_time_map["gun"] > 0)
+        this->weapon_reload_time_map["gun"]--;
 
     if(this->aiming){
         if(this->aiming_upwards){

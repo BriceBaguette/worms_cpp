@@ -23,8 +23,9 @@ class Worm {
         int health = WORM_INITIAL_HEALTH;
         bool aiming = false;
         bool aiming_upwards = false;
-        std::map<std::string, int> weapon_amunition_map{{"bazooka", BAZOOKA_INITIAL_AMMO}, {"gun", SHOTGUN_INITIAL_AMMO}};
         std::string weapon = "bazooka";
+        std::map<std::string, int> weapon_amunition_map{{"bazooka", BAZOOKA_INITIAL_AMMO}, {"gun", SHOTGUN_INITIAL_AMMO}};
+        std::map<std::string, int> weapon_reload_time_map{{"bazooka", 0}, {"gun", 0}};
         double weapon_angle = 0.;
     
     public:
@@ -41,6 +42,7 @@ class Worm {
 
         // Function to control worm's behaviour
         bool checkCollision(const std::list<SDL_Point>& points);
+        bool isWeaponReady();
         int getWeaponAmunition();
         double getWeaponAngle();
         std::string getWeapon();

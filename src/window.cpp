@@ -109,7 +109,7 @@ void WindowApp::event()
             case SDLK_SPACE:
                 if (!this->curr_worm_in_air){
                     //If the playing worm is using its jetpack or falling, it cannot shoot
-                    if(!this->curr_worm_shooting){
+                    if(!this->curr_worm_shooting && this->curr_worm->isWeaponReady() && this->curr_worm->getWeaponAmunition()>0){
                         //Starts the shooting process
                         this->curr_worm_shooting = true;
                     }
@@ -139,11 +139,13 @@ void WindowApp::event()
                 break;
             case SDLK_1:
                 //Worm selects weapon 1 (bazooka)
-                this->curr_worm->setWeapon("bazooka");
+                if(!this->curr_worm_shooting)
+                    this->curr_worm->setWeapon("bazooka");
                 break;
             case SDLK_2:
                 //Worm selects weapon 2 (shotgun)
-                this->curr_worm->setWeapon("gun");
+                if(!this->curr_worm_shooting)
+                    this->curr_worm->setWeapon("gun");
                 break;
             default:
                 break;
