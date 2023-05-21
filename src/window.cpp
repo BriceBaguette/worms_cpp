@@ -9,6 +9,7 @@ WindowApp::WindowApp()
         exit(-1);
     }
     this->worm1 = new Worm(this->renderer);
+    this->curr_worm = this->worm1;
     this->ground = new Ground();
 }
 
@@ -72,6 +73,12 @@ void WindowApp::render()
 void WindowApp::update()
 {
     this->worm1->update(ground->getPoints());
+
+    if(this->curr_worm_shooting && this->curr_worm_has_aimed){
+        this->shooting_power += SHOOTING_POWER_STEP;
+        if(this->shooting_power > MAX_SHOOTING_POWER)
+            this->shooting_power = MIN_SHOOTING_POWER;
+    }
 }
 
 void WindowApp::event()
@@ -99,6 +106,45 @@ void WindowApp::event()
                 // Move image to the right
                 this->worm1->setHSPeed(WORM_SPEED_MODIFIER);
                 break;
+            case SDLK_SPACE:
+                if (!this->curr_worm_in_air){
+                    //If the playing worm is using its jetpack or falling, it cannot shoot
+                    if(!this->curr_worm_shooting){
+                        //Starts the shooting process
+                        this->curr_worm_shooting = true;
+                    }
+                    else if(this->curr_worm_shooting && !this->curr_worm_has_aimed){
+                        //Starts the fire power gauging process
+                        this->curr_worm_has_aimed = true;
+                    }
+                    else if(this->curr_worm_shooting && this->curr_worm_has_aimed){
+                        //Finalize the shooting process
+                        this->curr_worm->fire();
+                        this->curr_worm_shooting = false;
+                        this->curr_worm_has_aimed = false;
+                    }
+                }
+                break;
+            case SDLK_UP:
+                if(this->curr_worm_shooting && !this->curr_worm_has_aimed){
+                    //If at aiming step of shooting process, set current worm to aim upwards
+                    this->curr_worm->setAiming(true, true);
+                }
+                break;
+            case SDLK_DOWN:
+                if(this->curr_worm_shooting && !this->curr_worm_has_aimed){
+                    //If at aiming step of shooting process, set current worm to aim downwards
+                    this->curr_worm->setAiming(true, false);
+                }
+                break;
+            case SDLK_1:
+                //Worm selects weapon 1 (bazooka)
+                this->curr_worm->setWeapon("bazooka");
+                break;
+            case SDLK_2:
+                //Worm selects weapon 2 (shotgun)
+                this->curr_worm->setWeapon("gun");
+                break;
             default:
                 break;
             }
@@ -114,6 +160,18 @@ void WindowApp::event()
             case SDLK_RIGHT:
                 // Stop animation
                 this->worm1->setHSPeed(0);
+                break;
+            case SDLK_UP:
+                if(this->curr_worm_shooting && !this->curr_worm_has_aimed){
+                    //If at aiming step of shooting process, set current worm to stop aiming upwards
+                    this->curr_worm->setAiming(false, false);
+                }
+                break;
+            case SDLK_DOWN:
+                if(this->curr_worm_shooting && !this->curr_worm_has_aimed){
+                    //If at aiming step of shooting process, set current worm to stop aiming downwards
+                    this->curr_worm->setAiming(false, false);
+                }
                 break;
             default:
                 break;

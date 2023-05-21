@@ -78,7 +78,7 @@ Rocket::Rocket(int x, int y, int speed, int angle, SDL_Renderer *renderer){
     this->cross_section_area = ROCKET_CROSS_SECTIONAL_AREA;
     this->width = ROCKET_WIDTH;
     this->height = ROCKET_HEIGHT;
-    this->sprite = Amunition::loadMedia(renderer, "./assets/assets/sprites/projectile_rocket.bmp", this->width, this->height);
+    this->sprite = this->loadMedia(renderer, "./assets/assets/sprites/projectile_rocket.bmp", this->width, this->height);
 }
 
 int Rocket::get_radius_damage(){

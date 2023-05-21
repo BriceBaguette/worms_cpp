@@ -4,6 +4,7 @@
 #include <vector>
 #include "defs.hpp"
 #include <list>
+#include <map>
 #include <algorithm>
 
 class Worm {
@@ -14,9 +15,17 @@ class Worm {
         std::vector<SDL_Texture*> movingSprite;
         SDL_Texture* fallingSprite = NULL;
         SDL_Texture* jetpackSprite = NULL;
+        SDL_Texture* bazookaSprite = NULL;
+        SDL_Texture* shotgunSprite = NULL;
         int vSpeed = WORM_FALLING_SPEED;
         int hSpeed = 0;       
         bool flip = false;
+        int health = WORM_INITIAL_HEALTH;
+        bool aiming = false;
+        bool aiming_upwards = false;
+        std::map<std::string, int> weapon_amunition_map{{"bazooka", BAZOOKA_INITIAL_AMMO}, {"gun", SHOTGUN_INITIAL_AMMO}};
+        std::string weapon = "bazooka";
+        double weapon_angle = 0.;
     
     public:
 
@@ -24,7 +33,7 @@ class Worm {
 
         // Function to load sprite        
         void loadAll(SDL_Renderer *renderer);
-        SDL_Texture* loadMedia(SDL_Renderer *renderer,const char* path);
+        SDL_Texture* loadMedia(SDL_Renderer *renderer,const char* path, int width, int height);
 
         // Function that manage the game behaviour and display of the worm
         void render(SDL_Renderer *renderer);
@@ -32,7 +41,14 @@ class Worm {
 
         // Function to control worm's behaviour
         bool checkCollision(const std::list<SDL_Point>& points);
+        int getWeaponAmunition();
+        double getWeaponAngle();
+        std::string getWeapon();
+        void setWeapon(const std::string& weapon);
+        int setDamage(int damage);
         void setHSPeed(int speed);
         void setVSPeed(int speed);
+        void setAiming(bool aiming, bool upwards);
+        void fire();
         void close();
 };
