@@ -14,7 +14,8 @@ public:
     Ground();
     void render(SDL_Renderer *renderer);
     void update();
-    std::vector<SDL_Point> getPoints();
+    std::list<SDL_Point> getPoints();
+    void destroyPoints(std::list<SDL_Point> destroyed_zone);
     void close();
 };
 

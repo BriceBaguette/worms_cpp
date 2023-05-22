@@ -2,6 +2,7 @@
 #include "worm.hpp"
 #include "defs.hpp"
 #include "ground.hpp"
+#include "projectile.hpp"
 #include <SDL2/SDL_ttf.h>
 
 class WindowApp
@@ -32,6 +33,21 @@ private:
     bool quit = false;
 
     Worm* worm1 = NULL;
+
+    Worm* curr_worm = NULL;
+
+    bool curr_worm_in_air = false;
+
+    bool curr_worm_shooting = false;
+    
+    bool curr_worm_has_aimed = false;
+
+    int shooting_power = MIN_SHOOTING_POWER;
+
+    Projectile* curr_projectile = nullptr;
+
+    void explodeProjectile(bool hit);
+
 
     bool init();
     void loadFont(const std::string& fontPath, int fontSize);

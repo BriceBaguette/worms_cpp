@@ -33,3 +33,8 @@ void Ground::render(SDL_Renderer *renderer)
 std::vector<SDL_Point> Ground::getPoints(){
     return this->points;
 }
+
+void Ground::destroyPoints(std::list<SDL_Point> destroyed_zone){
+    for (auto& point : destroyed_zone)
+        this->points.remove_if([point](SDL_Point p){ return (p.x==point.x && p.y==point.y); });
+}
