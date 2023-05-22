@@ -2,13 +2,13 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 #include <cmath>
-#include <vector>
+#include <list>
 #include <algorithm>
 
 class Ground
 {
 private:
-    std::vector<SDL_Point> points; 
+    std::list<SDL_Point> points; 
     int calculateY(int x);
 public:
     Ground();

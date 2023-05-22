@@ -28,9 +28,9 @@ void Ground::render(SDL_Renderer *renderer)
 {
     // Set the drawing color to white
     SDL_SetRenderDrawColor(renderer, 128, 96, 20, 255);
-    SDL_RenderDrawPoints(renderer, &this->points[0], this->points.size());
+    SDL_RenderDrawPoints(renderer, &this->points.front(), this->points.size());
 }
-std::vector<SDL_Point> Ground::getPoints(){
+std::list<SDL_Point> Ground::getPoints(){
     return this->points;
 }
 
