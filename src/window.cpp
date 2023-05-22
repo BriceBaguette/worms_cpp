@@ -100,6 +100,22 @@ void WindowApp::renderText(SDL_Renderer *renderer, SDL_Texture *texture, int x, 
     SDL_RenderCopy(renderer, texture, nullptr, &renderQuad);
 }
 
+void WindowApp::renderBar()
+{
+    int full_rect_width = (int)(POWER_BAR_WIDTH * this->shooting_power / (double)MAX_SHOOTING_POWER);
+    SDL_Rect full_rect = {POWER_BAR_X, POWER_BAR_Y, full_rect_width, POWER_BAR_HEIGHT};
+
+    int empty_rect_x = POWER_BAR_X + full_rect.w;
+    int empty_rect_width = POWER_BAR_WIDTH - full_rect_width;
+    SDL_Rect empty_rect = {empty_rect_x, POWER_BAR_Y, empty_rect_width, POWER_BAR_HEIGHT};
+
+    SDL_SetRenderDrawColor(this->renderer, 255, 0, 0, 255);
+    SDL_RenderFillRect(this->renderer, &full_rect);
+
+    SDL_SetRenderDrawColor(this->renderer, 211, 211, 211, 255);
+    SDL_RenderFillRect(this->renderer, &empty_rect);
+}
+
 void WindowApp::close()
 {
     this->ground->render(this->renderer);
@@ -126,7 +142,9 @@ void WindowApp::render()
     this->ground->render(this->renderer);
     if (this->curr_projectile!=nullptr)
         this->curr_projectile->render(this->renderer);
+
     this->renderText(this->renderer, this->timerText, 620,20);
+    this->renderBar();
 
     // Update the screen
     SDL_RenderPresent(this->renderer);
@@ -138,10 +156,10 @@ void WindowApp::update()
     this->timerText = createTextTexture(this->renderer, std::to_string((int)(this->timer/FRAME_RATE)), {255,0,0, 255}, 70,50);
     this->worm1->update(ground->getPoints());
 
+    if (this->curr_projectile != nullptr && !this->curr_projectile->update())
+        explodeProjectile(false);
+
     if(this->curr_projectile != nullptr){
-        if (!this->curr_projectile->update()){
-            explodeProjectile(false);
-        }
         SDL_Rect hitbox = this->worm1->getHitbox();
         bool hit = this->curr_projectile->checkCollision(hitbox);
         if(hit || this->curr_projectile->checkCollision(ground->getPoints())){
@@ -285,6 +303,7 @@ void WindowApp::explodeProjectile(bool hit){
         if (this->worm1->getHealth() <= 0)
             this->quit = true;
     }
+
     delete this->curr_projectile;
-    this->curr_projectile = nullptr; 
+    this->curr_projectile = nullptr;
 }
