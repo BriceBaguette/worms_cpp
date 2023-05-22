@@ -10,8 +10,8 @@
 
 class Worm {
     private:
-        int x = 200;
-        int y = 200;
+        int x;
+        int y;
         SDL_Texture* restSprite=NULL;
         std::vector<SDL_Texture*> movingSprite;
         SDL_Texture* fallingSprite = NULL;
@@ -31,7 +31,7 @@ class Worm {
     
     public:
 
-        Worm(SDL_Renderer *renderer);
+        Worm(SDL_Renderer *renderer,int x,int y);
 
         // Function to load sprite        
         void loadAll(SDL_Renderer *renderer);

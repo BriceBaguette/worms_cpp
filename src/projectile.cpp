@@ -25,10 +25,6 @@ bool Projectile::update(){
     //compute vertical speed variation accordingly to gravity (dv = a*dt)
     double dy_gravity =  GRAVITY/(double)FRAMERATE;
     //compute speed variation due to drag forces (dv = F/m * dt)
-    
-    std::cout << "h_speed:" << this->h_speed << std::endl;
-    std::cout << "v_speed:" << this->v_speed << std::endl;
-    std::cout << "angle:" << this->angle << std::endl;
     int mod = -1.;
     if (this->flip)
         mod = 1.;
@@ -47,11 +43,6 @@ bool Projectile::update(){
     }
     this->angle = angle;
 
-    std::cout << "drag_force:" << drag_force << std::endl;
-    std::cout << "h_speed:" << this->h_speed << std::endl;
-    std::cout << "v_speed:" << this->v_speed << std::endl;
-    std::cout << "arctan(-vspeed/hspeed):" << atan(-this->v_speed/this->h_speed) *180.0/M_PI << std::endl;
-    std::cout << "angle:" << this->angle << std::endl;
     return true;
 }
 
@@ -160,12 +151,6 @@ void Projectile::computeStartingPosition(std::tuple<bool, double, SDL_Rect, SDL_
 
         c_x += mod * 1;
     }
-    
-    std::cout << "weapon_center_x:" << weapon_center_x << std::endl;
-    std::cout << "weapon_center_y:" << weapon_center_y << std::endl;
-    std::cout << "this->center_x:" << this->center_x << std::endl;
-    std::cout << "this->center_y:" << this->center_y << std::endl;
-    std::cout << std::endl;
 }
 
 void Projectile::setExplosionZoneTemplate(int explosion_radius){
