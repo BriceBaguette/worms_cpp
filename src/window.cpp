@@ -114,6 +114,8 @@ void WindowApp::close()
     this->worm2->close();
     this->worm2 = nullptr;
     this->curr_worm = nullptr;
+
+    SDL_DestroyTexture(this->timerText);
     // Destroy renderer
     SDL_DestroyRenderer(renderer);
     renderer = NULL;
@@ -177,6 +179,7 @@ void WindowApp::update()
     }
 
     this->timer--;
+    SDL_DestroyTexture(this->timerText);
     this->timerText = createTextTexture(this->renderer, std::to_string((int)(this->timer / FRAME_RATE)), {255, 0, 0, 255}, 70, 50);
     this->worm1->update(ground->getPoints());
     this->worm2->update(ground->getPoints());

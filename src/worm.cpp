@@ -94,7 +94,7 @@ void Worm::update(const std::list<SDL_Point>& points){
     if(checkCollision(points)){
         this->vSpeed = 0;
     }
-    else if(this->vSpeed == 0){
+    if(this->vSpeed == 0){
         this->vSpeed = 2;
     }
     else if((this->vSpeed >=2)){
@@ -144,6 +144,7 @@ void Worm::render(SDL_Renderer *renderer)
 
     if(this->vSpeed == WORM_FALLING_SPEED){
         sprite = this->fallingSprite;
+        show_weapon = false;
     }
 
     SDL_QueryTexture(sprite, nullptr, nullptr, &destinationRect.w, &destinationRect.h);
