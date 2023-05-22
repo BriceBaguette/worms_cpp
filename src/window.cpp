@@ -75,30 +75,15 @@ void WindowApp::render()
 void WindowApp::update()
 {
     this->worm1->update(ground->getPoints());
+
     if(this->curr_projectile != nullptr){
-        if (this->curr_projectile->update()){
-            std::list<SDL_Point> explosion_zone = this->curr_projectile->getExplosionZone();
-            this->ground->destroyPoints(explosion_zone);
-            if (this->worm1->checkCollision(explosion_zone)){
-                this->worm1->setDamage(this->curr_projectile->getDamage());
-                if (this->worm1->getHealth() <= 0)
-                    this->quit = true;
-            }
-            delete this->curr_projectile;
-            this->curr_projectile = nullptr;
+        if (!this->curr_projectile->update()){
+            explodeProjectile(false);
         }
         SDL_Rect hitbox = this->worm1->getHitbox();
         bool hit = this->curr_projectile->checkCollision(hitbox);
         if(hit || this->curr_projectile->checkCollision(ground->getPoints())){
-            std::list<SDL_Point> explosion_zone = this->curr_projectile->getExplosionZone();
-            this->ground->destroyPoints(explosion_zone);
-            if (hit || this->worm1->checkCollision(explosion_zone)){
-                this->worm1->setDamage(this->curr_projectile->getDamage());
-                if (this->worm1->getHealth() <= 0)
-                    this->quit = true;
-            }
-            delete this->curr_projectile;
-            this->curr_projectile = nullptr;
+            explodeProjectile(hit);
         }
     }
 
@@ -153,7 +138,13 @@ void WindowApp::event()
                             this->curr_projectile = new Rocket(fire_params, this->shooting_power, this->renderer);
                         else
                             this->curr_projectile = new Bullet(fire_params, this->shooting_power, this->renderer);
-                            
+                        
+                        SDL_Rect hitbox = this->worm1->getHitbox();
+                        bool hit = this->curr_projectile->checkCollision(hitbox);
+                        if(hit || this->curr_projectile->checkCollision(ground->getPoints())){
+                            explodeProjectile(hit);
+                        }
+                        
                         this->curr_worm_shooting = false;
                         this->curr_worm_has_aimed = false;
                     }
@@ -222,4 +213,16 @@ void WindowApp::event()
 bool WindowApp::getQuit()
 {
     return this->quit;
+}
+
+void WindowApp::explodeProjectile(bool hit){
+    std::list<SDL_Point> explosion_zone = this->curr_projectile->getExplosionZone();
+    this->ground->destroyPoints(explosion_zone);
+    if (hit || this->worm1->checkCollision(explosion_zone)){
+        this->worm1->setDamage(this->curr_projectile->getDamage());
+        if (this->worm1->getHealth() <= 0)
+            this->quit = true;
+    }
+    delete this->curr_projectile;
+    this->curr_projectile = nullptr; 
 }

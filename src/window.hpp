@@ -34,6 +34,8 @@ private:
 
     Projectile* curr_projectile = nullptr;
 
+    void explodeProjectile(bool hit);
+
 public:
     WindowApp();
     bool init();

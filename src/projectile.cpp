@@ -7,15 +7,15 @@ void Projectile::render(SDL_Renderer *renderer){
     // Set the position and dimensions of the image
     SDL_QueryTexture(this->sprite, nullptr, nullptr, &destinationRect.w, &destinationRect.h);
     if (this->flip)
-        SDL_RenderCopyEx(renderer, this->sprite, nullptr, &destinationRect, this->angle, nullptr, SDL_FLIP_HORIZONTAL);
+        SDL_RenderCopyEx(renderer, this->sprite, nullptr, &destinationRect, -this->angle, nullptr, SDL_FLIP_HORIZONTAL);
     else
         SDL_RenderCopyEx(renderer, this->sprite, nullptr, &destinationRect, this->angle, nullptr, SDL_FLIP_NONE);
 }
 
 bool Projectile::update(){
     //update position accordingly to previous step speed
-    this->center_x += this->h_speed;
-    this->center_y += this->v_speed;
+    this->center_x += this->h_speed / (double)FRAMERATE;
+    this->center_y += this->v_speed / (double)FRAMERATE;
     //if the projectile steps out of the screen, it will be destroyed;
     if (this->center_x - this->width/2 < 0 || this->center_x+this->width/2>=SCREEN_WIDTH)
         return false;
@@ -23,17 +23,21 @@ bool Projectile::update(){
         return false;
 
     //compute vertical speed variation accordingly to gravity (dv = a*dt)
-    double dy_gravity =  GRAVITY * 1/(double)FRAMERATE;
+    double dy_gravity =  GRAVITY/(double)FRAMERATE;
     //compute speed variation due to drag forces (dv = F/m * dt)
+    
+    std::cout << "h_speed:" << this->h_speed << std::endl;
+    std::cout << "v_speed:" << this->v_speed << std::endl;
+    std::cout << "angle:" << this->angle << std::endl;
     int mod = -1.;
     if (this->flip)
         mod = 1.;
-    double drag_force = -1/2 * AIR_DENSITY * this->cross_section_area * DRAG_COEFFICIENT * pow(this->speed, 2);
-    double dx_drag = mod * drag_force*cos(this->angle * M_PI/180.0) / this->mass * 1/FRAMERATE;
-    double dy_drag = drag_force*-sin(this->angle * M_PI/180.0) / this->mass * 1/FRAMERATE;
+    double drag_force = -1/2. * AIR_DENSITY * this->cross_section_area * DRAG_COEFFICIENT * pow(this->speed, 2);
+    double dx_drag = mod * drag_force*cos(this->angle * M_PI/180.0) / (double)this->mass * 1/(double)FRAMERATE;
+    double dy_drag = drag_force*-sin(this->angle * M_PI/180.0) / (double)this->mass * 1/(double)FRAMERATE;
     //apply those variations to the axial speeds
     this->h_speed += dx_drag;
-    this->v_speed += (dy_drag + dy_gravity);
+    this->v_speed += dy_drag + dy_gravity;
     //recompute speed and angle with new values of axial speeds (v = sqrt(v_h^2 + v_v^2) and angle = arctan(v_v/v_h))
     this->speed = sqrt(pow(this->h_speed, 2) + pow(this->v_speed, 2));
 
@@ -43,7 +47,12 @@ bool Projectile::update(){
     }
     this->angle = angle;
 
-    return false;
+    std::cout << "drag_force:" << drag_force << std::endl;
+    std::cout << "h_speed:" << this->h_speed << std::endl;
+    std::cout << "v_speed:" << this->v_speed << std::endl;
+    std::cout << "arctan(-vspeed/hspeed):" << atan(-this->v_speed/this->h_speed) *180.0/M_PI << std::endl;
+    std::cout << "angle:" << this->angle << std::endl;
+    return true;
 }
 
 bool Projectile::checkCollision(const std::list<SDL_Point>& points){
@@ -123,11 +132,11 @@ void Projectile::computeStartingPosition(std::tuple<bool, double, SDL_Rect, SDL_
     if (abs(this->angle) == 90){
 
         int mod = 1.;
-        if (this->angle < 0)
+        if (this->angle > 0)
             mod = -1.;
         
         this->center_x = weapon_center_x;
-        this->center_y = (double) worm_center_y + mod * worm_rect.h/2. + mod * this->height/2.;
+        this->center_y = (double) worm_center_y + mod * worm_rect.h/2. + mod * this->width/2.;
 
         return;
     }
@@ -136,26 +145,27 @@ void Projectile::computeStartingPosition(std::tuple<bool, double, SDL_Rect, SDL_
     if (this->flip)
         mod = 1;
 
-    double h = this->height;
-    double w =this->width;
-    if (this->angle<-45 || this->angle>45){
-        h = this->width;
-        w = this->height;
-    }
-
-    double slope = tan(this->angle * M_PI/180.0);
+    double slope = (mod*-1.) * tan(this->angle * M_PI/180.0);
     double c_x = weapon_center_x + mod*1;
     bool ok = false;
+
     while(!ok){
+
         double c_y = slope * (c_x - weapon_center_x) +  weapon_center_y;
-        SDL_Rect rect = {(int) (c_x-w/2.), (int) (c_y-h/2.), (int) w, (int) h};
-        if (!this->checkCollision(rect)){
-            this->center_x = c_x;
-            this->center_y = c_y;
+        this->center_x = c_x;
+        this->center_y = c_y;
+        if (!this->checkCollision(worm_rect)){
             ok = true;
         }
+
         c_x += mod * 1;
-    } 
+    }
+    
+    std::cout << "weapon_center_x:" << weapon_center_x << std::endl;
+    std::cout << "weapon_center_y:" << weapon_center_y << std::endl;
+    std::cout << "this->center_x:" << this->center_x << std::endl;
+    std::cout << "this->center_y:" << this->center_y << std::endl;
+    std::cout << std::endl;
 }
 
 void Projectile::setExplosionZoneTemplate(int explosion_radius){
@@ -186,10 +196,11 @@ Bullet::Bullet(std::tuple<bool, double, SDL_Rect, SDL_Rect>& fire_params, double
     this->height = BULLET_HEIGHT;
     this->computeStartingPosition(fire_params);
     this->speed = speed;
+    double mod = 1.;
     if(!this->flip)
-        this->speed *= -1.;
-    this->h_speed = this->speed * cos(angle * M_PI/180.0);
-    this->v_speed = this->speed * -sin(angle * M_PI/180.0);        //as height idices are defined from top to bottom
+        mod = -1.;
+    this->h_speed = mod * this->speed * cos(this->angle * M_PI/180.0);
+    this->v_speed = this->speed * -sin(this->angle * M_PI/180.0);        //as height idices are defined from top to bottom
     this->mass = BULLET_MASS;
     this->cross_section_area = BULLET_CROSS_SECTIONAL_AREA;
     this->sprite = this->loadMedia(renderer, "./assets/assets/sprites/projectile_bullet.bmp", this->width, this->height);
@@ -210,10 +221,11 @@ Rocket::Rocket(std::tuple<bool, double, SDL_Rect, SDL_Rect>& fire_params, double
     this->height = ROCKET_HEIGHT;
     this->computeStartingPosition(fire_params);
     this->speed = speed;
+    double mod = 1.;
     if(!this->flip)
-        this->speed *= -1.;
-    this->h_speed = this->speed * cos(angle * M_PI/180.0);
-    this->v_speed = this->speed * -sin(angle * M_PI/180.0);        //as height idices are defined from top to bottom
+        mod = -1.;
+    this->h_speed = mod * this->speed * cos(this->angle * M_PI/180.0);
+    this->v_speed = this->speed * -sin(this->angle * M_PI/180.0);        //as height idices are defined from top to bottom
     this->mass = ROCKET_MASS;
     this->cross_section_area = ROCKET_CROSS_SECTIONAL_AREA;
     this->sprite = this->loadMedia(renderer, "./assets/assets/sprites/projectile_rocket.bmp", this->width, this->height);
