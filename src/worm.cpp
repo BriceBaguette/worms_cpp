@@ -187,6 +187,7 @@ void Worm::render(SDL_Renderer *renderer)
             int weapon_y = weapon_center_y - WEAPON_HEIGHT/2;
             SDL_Rect weapon_destination_rect = {weapon_x, weapon_y, WEAPON_WIDTH, WEAPON_HEIGHT };
             
+
             SDL_QueryTexture(weaponSprite, nullptr, nullptr, &weapon_destination_rect.w, &weapon_destination_rect.h);
             SDL_RenderCopyEx(renderer, 
                             weaponSprite, 

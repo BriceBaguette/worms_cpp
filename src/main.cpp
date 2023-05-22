@@ -11,10 +11,15 @@ int main()
 {
     WindowApp app;
     while(!app.getQuit()){
-        app.update();
+        int frameStart = SDL_GetTicks();
         app.render();
         app.event();
-        SDL_Delay(33);
+        app.update();
+        int targetFrameTime = (1000/FRAME_RATE);
+        int frameTime = SDL_GetTicks() - frameStart;
+        if (frameTime < targetFrameTime) {
+            SDL_Delay(targetFrameTime - frameTime);
+        }
     }
     return 0;
 }

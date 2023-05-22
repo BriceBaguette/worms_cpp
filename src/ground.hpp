@@ -9,6 +9,7 @@ class Ground
 {
 private:
     std::list<SDL_Point> points; 
+    std::vector<SDL_Point> pointVector;
     int calculateY(int x);
 public:
     Ground();

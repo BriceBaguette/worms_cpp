@@ -3,6 +3,7 @@
 #include "defs.hpp"
 #include "ground.hpp"
 #include "projectile.hpp"
+#include <SDL2/SDL_ttf.h>
 
 class WindowApp
 {
@@ -13,8 +14,19 @@ private:
     //The surface contained by the window
     SDL_Renderer* renderer = NULL;
 
-    //the surface of the sprite
-    SDL_Surface* gSprite = NULL;
+    TTF_Font* gFont = nullptr;
+
+    double timer = TIMER;
+
+    SDL_Texture* timerText = nullptr;
+
+    SDL_Texture* player1Health = nullptr;
+
+    SDL_Texture* player2Health = nullptr;
+
+    SDL_Texture* player1Name = nullptr;
+
+    SDL_Texture* player2name = nullptr;
 
     Ground* ground = NULL;
 
@@ -36,9 +48,15 @@ private:
 
     void explodeProjectile(bool hit);
 
+
+    bool init();
+    void loadFont(const std::string& fontPath, int fontSize);
+    void renderText(SDL_Renderer* renderer, SDL_Texture* texture, int x, int y);
+    SDL_Texture* createTextTexture(SDL_Renderer *renderer, const std::string &text, SDL_Color textColor, int surfaceWidth, int surfaceHeight);
+    
+
 public:
     WindowApp();
-    bool init();
     void update();
     void close();
     void render();
