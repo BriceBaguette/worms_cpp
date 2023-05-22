@@ -13,7 +13,7 @@ void Worm::setVSPeed(int speed){
     this->vSpeed = speed;
 }
 
-bool Worm::checkCollision(const std::list<SDL_Point>& points) {
+bool Worm::checkCollision(const std::vector<SDL_Point>& points) {
     SDL_Rect rect = {this->x, this->y,WORM_WIDTH, WORM_HEIGHT};
     for (const SDL_Point& point : points) {
         if (point.x >= rect.x && point.x < (rect.x + rect.w)&&
@@ -25,7 +25,7 @@ bool Worm::checkCollision(const std::list<SDL_Point>& points) {
     return false;  // No collision
 }
 
-void Worm::update(const std::list<SDL_Point>& points){
+void Worm::update(const std::vector<SDL_Point>& points){
     if(!(this->x + this->hSpeed < 0 || this->x + this->hSpeed > SCREEN_WIDTH - WORM_WIDTH) && !(this->vSpeed<0))
         this->x += this->hSpeed;
     this->y += this->vSpeed;

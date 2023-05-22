@@ -6,3 +6,4 @@
 #define WORM_WIDTH 30
 #define WORM_HEIGHT 50
 #define GROUND_HEIGHT 420
+#define FRAME_RATE 30
