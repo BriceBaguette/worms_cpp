@@ -20,6 +20,10 @@ private:
 
     SDL_Texture* timerText = nullptr;
 
+    SDL_Color* power_bar_empty_color;
+
+    SDL_Color* power_bar_full_color;
+
     SDL_Texture* player1Health = nullptr;
 
     SDL_Texture* player2Health = nullptr;
@@ -54,6 +58,7 @@ private:
     bool init();
     void loadFont(const std::string& fontPath, int fontSize);
     void renderText(SDL_Renderer* renderer, SDL_Texture* texture, int x, int y);
+    void renderBar();
     SDL_Texture* createTextTexture(SDL_Renderer *renderer, const std::string &text, SDL_Color textColor, int surfaceWidth, int surfaceHeight);
     
 
