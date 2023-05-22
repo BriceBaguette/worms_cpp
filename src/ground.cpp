@@ -41,3 +41,9 @@ void Ground::destroyPoints(std::list<SDL_Point> destroyed_zone){
     pointVector.clear();
     pointVector.assign(points.begin(), points.end());
 }
+
+void Ground::close()
+{
+    points.clear();
+    pointVector.clear();
+}

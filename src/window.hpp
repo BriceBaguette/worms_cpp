@@ -26,13 +26,15 @@ private:
 
     SDL_Texture* player1Name = nullptr;
 
-    SDL_Texture* player2name = nullptr;
+    SDL_Texture* player2Name = nullptr;
 
     Ground* ground = NULL;
 
     bool quit = false;
 
     Worm* worm1 = NULL;
+
+    Worm* worm2 = NULL;
 
     Worm* curr_worm = NULL;
 

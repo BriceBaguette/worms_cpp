@@ -1,6 +1,6 @@
 #include "worm.hpp"
 
-Worm::Worm(SDL_Renderer *renderer)
+Worm::Worm(SDL_Renderer *renderer, int xCoord,int yCoord) :  x(xCoord), y(yCoord) 
 {
     this->loadAll(renderer);
 }
@@ -229,4 +229,20 @@ SDL_Texture *Worm::loadMedia(SDL_Renderer *renderer, const char *path, int width
     SDL_FreeSurface(resizedSurface);
     SDL_FreeSurface(imageSurface);
     return wormSprite;
+}
+
+void Worm::close() {
+    // Free the textures
+    if (restSprite)
+        SDL_DestroyTexture(restSprite);
+    for (SDL_Texture* texture : movingSprite)
+        SDL_DestroyTexture(texture);
+    if (fallingSprite)
+        SDL_DestroyTexture(fallingSprite);
+    if (jetpackSprite)
+        SDL_DestroyTexture(jetpackSprite);
+    if (bazookaSprite)
+        SDL_DestroyTexture(bazookaSprite);
+    if (shotgunSprite)
+        SDL_DestroyTexture(shotgunSprite);
 }
