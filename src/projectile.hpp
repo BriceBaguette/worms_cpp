@@ -6,16 +6,16 @@
 #include <iostream>
 #include <cmath>
 #include <tuple>
-#include <list>
+#include <vector>
 #include "defs.hpp"
 
 class Projectile{
 
     public:
-        virtual std::list<SDL_Point> getExplosionZone() = 0;
+        virtual std::vector<SDL_Point> getExplosionZone() = 0;
         virtual void render(SDL_Renderer *renderer);
         virtual bool update();
-        virtual bool checkCollision(const std::list<SDL_Point>& points);
+        virtual bool checkCollision(const std::vector<SDL_Point>& points);
         virtual bool checkCollision(const SDL_Rect& hitbox);
         virtual int getDamage();
 
@@ -38,7 +38,7 @@ class Projectile{
         SDL_Texture* sprite;
         int damage_points;
         int explosion_radius;
-        std::list<SDL_Point> explosion_zone_template;
+        std::vector<SDL_Point> explosion_zone_template;
 
         virtual SDL_Texture* loadMedia(SDL_Renderer *renderer, const char* path, int width, int height);
         virtual void computeStartingPosition(std::tuple<bool, double, SDL_Rect, SDL_Rect>& fire_params);
@@ -49,14 +49,14 @@ class Bullet : public Projectile{
 
     public:
         Bullet(std::tuple<bool, double, SDL_Rect, SDL_Rect>& , double speed, SDL_Renderer *renderer);
-        std::list<SDL_Point> getExplosionZone() override;
+        std::vector<SDL_Point> getExplosionZone() override;
 };
 
 class Rocket : public Projectile{
 
     public:
         Rocket(std::tuple<bool, double, SDL_Rect, SDL_Rect>& fire_params, double speed, SDL_Renderer *renderer);
-        std::list<SDL_Point> getExplosionZone() override;
+        std::vector<SDL_Point> getExplosionZone() override;
 };
 
 #endif

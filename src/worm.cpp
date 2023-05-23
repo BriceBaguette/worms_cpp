@@ -66,7 +66,7 @@ bool Worm::isWeaponReady(){
     return false;
 }
 
-bool Worm::checkCollision(const std::list<SDL_Point>& points) {
+bool Worm::checkCollision(const std::vector<SDL_Point>& points) {
     SDL_Rect rect = {this->x, this->y,WORM_WIDTH, WORM_HEIGHT};
     for (const SDL_Point& point : points) {
         if (point.x >= rect.x && point.x < (rect.x + rect.w)&&
@@ -87,7 +87,7 @@ int Worm::getHealth(){
     return this->health;
 }
 
-void Worm::update(const std::list<SDL_Point>& points){
+void Worm::update(const std::vector<SDL_Point>& points){
     if(!(this->x + this->hSpeed < 0 || this->x + this->hSpeed > SCREEN_WIDTH - WORM_WIDTH) && !(this->vSpeed<0))
         this->x += this->hSpeed;
     this->y += this->vSpeed;

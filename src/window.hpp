@@ -3,6 +3,7 @@
 #include "defs.hpp"
 #include "ground.hpp"
 #include "projectile.hpp"
+#include "vector"
 #include <SDL2/SDL_ttf.h>
 
 class WindowApp
