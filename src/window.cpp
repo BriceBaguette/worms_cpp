@@ -175,6 +175,7 @@ void WindowApp::update()
 {
     if (this->timer == 0)
     {
+        this->curr_worm->setHSPeed(0);
         if (this->curr_worm == this->worm1)
         {
             this->curr_worm = this->worm2;
@@ -222,6 +223,7 @@ void WindowApp::update()
         if (this->shooting_power > MAX_SHOOTING_POWER)
             this->shooting_power = MIN_SHOOTING_POWER;
     }
+}
 }
 
 void WindowApp::event()
