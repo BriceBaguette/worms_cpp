@@ -163,6 +163,26 @@ void WindowApp::renderWormsAmunitions()
     }
 }
 
+void WindowApp::close()
+{
+    if (curr_projectile != nullptr)
+        delete curr_projectile;
+    delete ground;
+    delete worm1;
+    delete worm2;
+    SDL_DestroyTexture(timer_text);
+    SDL_DestroyTexture(player1_health);
+    SDL_DestroyTexture(player2_health);
+    SDL_DestroyTexture(player1_name);
+    SDL_DestroyTexture(player2_name);
+    SDL_DestroyTexture(bullet_sprite);
+    SDL_DestroyTexture(rocket_sprite);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(gWindow);
+    TTF_CloseFont(gFont);
+    SDL_Quit();
+}
+
 void WindowApp::render()
 {
     // Clear the screen
@@ -188,6 +208,18 @@ void WindowApp::render()
 
     this->renderWormsAmunitions();
 
+    if (this->quit){
+        std::string str;
+        if(this->worm1->getHealth() == 0)
+            str = "Player 2 won the game!";
+        else    
+            str = "Player 1 won the game!";
+
+        SDL_Texture* end_game = createTextTexture(this->renderer, str, {0, 0, 0, 255});
+        SDL_Rect rect = {490, 335, 300, 50};
+        SDL_RenderCopy(this->renderer, end_game, NULL, &rect);
+        SDL_DestroyTexture(end_game);
+    }
     // Update the screen
     SDL_RenderPresent(this->renderer);
 }
@@ -246,6 +278,9 @@ void WindowApp::update()
         if (this->shooting_power > MAX_SHOOTING_POWER)
             this->shooting_power = MIN_SHOOTING_POWER;
     }
+
+    if (this->quit)
+        this->render();
 }
 
 void WindowApp::event()
@@ -258,7 +293,7 @@ void WindowApp::event()
         switch (event.type)
         {
         case SDL_QUIT:
-            this->quit = true;
+            this->hard_quit = true;
             break;
         case SDL_KEYDOWN:
             // Keydown event
@@ -386,6 +421,11 @@ void WindowApp::event()
 bool WindowApp::getQuit()
 {
     return this->quit;
+}
+
+bool WindowApp::getHardQuit()
+{
+    return this->hard_quit;
 }
 
 void WindowApp::explodeProjectile(bool hit1, bool hit2)

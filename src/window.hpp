@@ -35,6 +35,7 @@ private:
     Ground* ground = NULL;
 
     bool quit = false;
+    bool hard_quit = false;
 
     Worm* worm1 = NULL;
     Worm* worm2 = NULL;
@@ -56,28 +57,12 @@ private:
 
 public:
     WindowApp();
-    ~WindowApp(){
-        if (curr_projectile != nullptr)
-            delete curr_projectile;
-        delete ground;
-        delete worm1;
-        delete worm2;
-        SDL_DestroyTexture(timer_text);
-        SDL_DestroyTexture(player1_health);
-        SDL_DestroyTexture(player2_health);
-        SDL_DestroyTexture(player1_name);
-        SDL_DestroyTexture(player2_name);
-        SDL_DestroyTexture(bullet_sprite);
-        SDL_DestroyTexture(rocket_sprite);
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(gWindow);
-        TTF_CloseFont(gFont);
-        SDL_Quit();
-    };
+    void close();
     void update();
     void render();
     void event();
     bool getQuit();
+    bool getHardQuit();
 };
 
 #endif

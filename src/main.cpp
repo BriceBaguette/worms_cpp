@@ -10,12 +10,13 @@ and may not be redistributed without written permission.*/
 int main()
 {
     WindowApp app;
-    bool quit = app.getQuit();
-    while(true){
+    while(!app.getHardQuit()){
         int frameStart = SDL_GetTicks();
-        if(!quit){
+        if(!app.getQuit()){
             app.render();
+        }
             app.event();
+        if(!app.getQuit()){
             app.update();
         }
         int targetFrameTime = (1000/FRAMERATE);
@@ -24,5 +25,6 @@ int main()
             SDL_Delay(targetFrameTime - frameTime); 
         }
     }
+    app.close();
     return 0;
 }

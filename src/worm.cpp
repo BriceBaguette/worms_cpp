@@ -31,6 +31,8 @@ void Worm::setWeapon(const std::string& weapon){
 
 int Worm::setDamage(int damage){
     this->health -= damage;
+    if (this->health < 0)
+        this->health = 0;
     return this->health;
 }
 
