@@ -18,7 +18,7 @@ int main()
         int targetFrameTime = (1000/FRAMERATE);
         int frameTime = SDL_GetTicks() - frameStart;
         if (frameTime < targetFrameTime) {
-            SDL_Delay(targetFrameTime - frameTime);
+            SDL_Delay(targetFrameTime - frameTime); 
         }
     }
     return 0;

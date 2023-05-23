@@ -1,6 +1,6 @@
 #include "worm.hpp"
 
-Worm::Worm(SDL_Renderer *renderer)
+Worm::Worm(SDL_Renderer *renderer, int xCoord,int yCoord) :  x(xCoord), y(yCoord) 
 {
     this->loadAll(renderer);
 }
@@ -74,7 +74,7 @@ bool Worm::isWeaponReady(){
     return false;
 }
 
-bool Worm::checkCollision(const std::list<SDL_Point>& points) {
+bool Worm::checkCollision(const std::vect<SDL_Point>& points) {
     SDL_Rect rect = this->getCollisionHitbox();
     for (const SDL_Point& point : points) {
         if (point.x >= rect.x && point.x < (rect.x + rect.w)&&
@@ -379,6 +379,27 @@ void Worm::render(SDL_Renderer *renderer)
         SDL_QueryTexture(weaponSprite, nullptr, nullptr, &weapon_destination_rect.w, &weapon_destination_rect.h);
     }
 
+    if(this->vSpeed < 0){
+        sprite = this->jetpackSprite;
+    }
+
+    if (show_weapon){
+        if(!this->weapon.compare("bazooka"))
+            weaponSprite = this->bazookaSprite;
+        else
+            weaponSprite = this->shotgunSprite;
+
+        int mod = this->flip ? -1. : 1.;
+
+        double weapon_center_x = this->x + WORM_WIDTH/2. + mod*WORM_WEAPON_CENTERS_DISTANCE_X;
+        double weapon_center_y = this->y + WORM_HEIGHT/2. + (double)WORM_WEAPON_CENTERS_DISTANCE_Y;
+        int weapon_x = (int)(weapon_center_x - WEAPON_WIDTH/2.);
+        int weapon_y = (int)(weapon_center_y - WEAPON_HEIGHT/2.);
+        weapon_destination_rect = {weapon_x, weapon_y, WEAPON_WIDTH, WEAPON_HEIGHT };
+
+        SDL_QueryTexture(weaponSprite, nullptr, nullptr, &weapon_destination_rect.w, &weapon_destination_rect.h);
+    }
+
     SDL_QueryTexture(sprite, nullptr, nullptr, &destinationRect.w, &destinationRect.h);
     if(this->flip){
         SDL_RenderCopyEx(renderer, sprite, nullptr, &destinationRect, 0, nullptr, SDL_FLIP_HORIZONTAL);
@@ -433,4 +454,20 @@ SDL_Texture *Worm::loadMedia(SDL_Renderer *renderer, const char *path, int width
     SDL_FreeSurface(resizedSurface);
     SDL_FreeSurface(imageSurface);
     return wormSprite;
+}
+
+void Worm::close() {
+    // Free the textures
+    if (restSprite)
+        SDL_DestroyTexture(restSprite);
+    for (SDL_Texture* texture : movingSprite)
+        SDL_DestroyTexture(texture);
+    if (fallingSprite)
+        SDL_DestroyTexture(fallingSprite);
+    if (jetpackSprite)
+        SDL_DestroyTexture(jetpackSprite);
+    if (bazookaSprite)
+        SDL_DestroyTexture(bazookaSprite);
+    if (shotgunSprite)
+        SDL_DestroyTexture(shotgunSprite);
 }

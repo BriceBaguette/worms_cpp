@@ -1,17 +1,19 @@
+#ifndef WORM
+#define WORM
+
 #include<SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <iostream>
 #include <vector>
 #include "defs.hpp"
-#include <list>
 #include <map>
 #include <tuple>
 #include <algorithm>
 
 class Worm {
     private:
-        double x = 200;
-        double y = 200;
+        int x;
+        int y;
         SDL_Texture* restSprite=NULL;
         std::vector<SDL_Texture*> movingSprite;
         SDL_Texture* fallingSprite = NULL;
@@ -38,7 +40,7 @@ class Worm {
     
     public:
 
-        Worm(SDL_Renderer *renderer);
+        Worm(SDL_Renderer *renderer,int x,int y);
 
         // Function to load sprite        
         void loadAll(SDL_Renderer *renderer);
@@ -49,7 +51,7 @@ class Worm {
         void update(const std::list<SDL_Point>& points, const SDL_Rect other_worm_hitbox);
 
         // Function to control worm's behaviour
-        bool checkCollision(const std::list<SDL_Point>& points);
+        bool checkCollision(const std::vector<SDL_Point>& points);
         SDL_Rect getHitbox();
         int getHealth();
         bool isWeaponReady();
@@ -65,3 +67,5 @@ class Worm {
         std::tuple<bool, double, SDL_Rect, SDL_Rect> fire();
         void close();
 };
+
+#endif

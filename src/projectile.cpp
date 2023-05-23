@@ -46,7 +46,7 @@ bool Projectile::update(){
     return true;
 }
 
-bool Projectile::checkCollision(const std::list<SDL_Point>& points){
+bool Projectile::checkCollision(const std::vector<SDL_Point>& points){
 
     SDL_Rect projectile_hitbox;
     if((this->angle>45 && this->angle<135) || (this->angle<-45 && this->angle>-135))    //in that case the hit box is rotated by 90 degrees to be closer to the true orientation of the projectile
@@ -151,17 +151,11 @@ void Projectile::computeStartingPosition(std::tuple<bool, double, SDL_Rect, SDL_
 
         c_x += mod * 1;
     }
-    
-    std::cout << "weapon_center_x:" << weapon_center_x << std::endl;
-    std::cout << "weapon_center_y:" << weapon_center_y << std::endl;
-    std::cout << "this->center_x:" << this->center_x << std::endl;
-    std::cout << "this->center_y:" << this->center_y << std::endl;
-    std::cout << std::endl;
 }
 
 void Projectile::setExplosionZoneTemplate(int explosion_radius){
     
-    std::list<SDL_Point> explosion_zone_template;
+    std::vector<SDL_Point> explosion_zone_template;
     if(explosion_radius == 0)
         this->explosion_zone_template = explosion_zone_template;
 
@@ -200,10 +194,10 @@ Bullet::Bullet(std::tuple<bool, double, SDL_Rect, SDL_Rect>& fire_params, double
     this->setExplosionZoneTemplate(this->explosion_radius);
 }
 
-std::list<SDL_Point> Bullet::getExplosionZone(){
+std::vector<SDL_Point> Bullet::getExplosionZone(){
     
-    std::list<SDL_Point> list;
-    return list;
+    std::vector<SDL_Point> vector;
+    return vector;
 }
 
 Rocket::Rocket(std::tuple<bool, double, SDL_Rect, SDL_Rect>& fire_params, double speed, SDL_Renderer *renderer){
@@ -225,14 +219,14 @@ Rocket::Rocket(std::tuple<bool, double, SDL_Rect, SDL_Rect>& fire_params, double
     this->setExplosionZoneTemplate(this->explosion_radius);
 }
 
-std::list<SDL_Point> Rocket::getExplosionZone(){
+std::vector<SDL_Point> Rocket::getExplosionZone(){
 
-    std::list<SDL_Point> list;
+    std::vector<SDL_Point> vector;
 
     for (const auto& point :  this->explosion_zone_template)
     {
-        list.push_back({point.x+(int)this->center_x, point.y+(int)this->center_y});
+        vector.push_back({point.x+(int)this->center_x, point.y+(int)this->center_y});
     }
 
-    return list;
+    return vector;
 }

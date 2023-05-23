@@ -1,8 +1,12 @@
+#ifndef WINDOW
+#define WINDOW
+
 #include <SDL2/SDL.h>
 #include "worm.hpp"
 #include "defs.hpp"
-#include "ground.hpp"
+#include "environment.hpp"
 #include "projectile.hpp"
+#include "vector"
 #include <SDL2/SDL_ttf.h>
 
 class WindowApp
@@ -26,13 +30,19 @@ private:
 
     SDL_Texture* player1Name = nullptr;
 
-    SDL_Texture* player2name = nullptr;
+    SDL_Texture* player2Name = nullptr;
 
     Ground* ground = NULL;
+
+    Platform* platform1 = NULL;
+
+    Platform* platform2 = NULL;
 
     bool quit = false;
 
     Worm* worm1 = NULL;
+
+    Worm* worm2 = NULL;
 
     Worm* curr_worm = NULL;
 
@@ -65,5 +75,4 @@ public:
     bool getQuit();
 };
 
-
-
+#endif
