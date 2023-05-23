@@ -52,4 +52,9 @@
 #define MIN_SHOOTING_POWER 0                //pixel/sec
 #define MAX_SHOOTING_POWER 500              //pixel/sec
 
+#define POWER_BAR_X 730                   //pixel index
+#define POWER_BAR_Y 20                    //pixel index
+#define POWER_BAR_WIDTH 400               //pixel
+#define POWER_BAR_HEIGHT 50               //pixel
+
 #endif
