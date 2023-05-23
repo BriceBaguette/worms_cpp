@@ -46,8 +46,6 @@ private:
 
     Worm* curr_worm = NULL;
 
-    bool curr_worm_in_air = false;
-
     bool curr_worm_shooting = false;
     
     bool curr_worm_has_aimed = false;

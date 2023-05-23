@@ -33,10 +33,10 @@ class Worm {
         double weapon_angle = 0.;
 
         SDL_Rect getCollisionHitbox();
-        double checkHorizontalCollision(const std::list<SDL_Point>& points, const SDL_Rect other_worm_hitbox);
-        double checkVerticalCollision(const std::list<SDL_Point>& points, const SDL_Rect other_worm_hitbox);
-        double hasSteppedInVoid(const std::list<SDL_Point>& points);
-        void climbSlope(const std::list<SDL_Point>& points, SDL_Rect collision_box);
+        double checkHorizontalCollision(const std::vector<SDL_Point>& points, const SDL_Rect other_worm_hitbox);
+        double checkVerticalCollision(const std::vector<SDL_Point>& points, const SDL_Rect other_worm_hitbox);
+        double hasSteppedInVoid(const std::vector<SDL_Point>& points);
+        void climbSlope(const std::vector<SDL_Point>& points, SDL_Rect collision_box);
     
     public:
 
@@ -48,7 +48,7 @@ class Worm {
 
         // Function that manage the game behaviour and display of the worm
         void render(SDL_Renderer *renderer);
-        void update(const std::list<SDL_Point>& points, const SDL_Rect other_worm_hitbox);
+        void update(const std::vector<SDL_Point>& points, const SDL_Rect other_worm_hitbox);
 
         // Function to control worm's behaviour
         bool checkCollision(const std::vector<SDL_Point>& points);

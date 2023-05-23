@@ -74,7 +74,7 @@ bool Worm::isWeaponReady(){
     return false;
 }
 
-bool Worm::checkCollision(const std::vect<SDL_Point>& points) {
+bool Worm::checkCollision(const std::vector<SDL_Point>& points) {
     SDL_Rect rect = this->getCollisionHitbox();
     for (const SDL_Point& point : points) {
         if (point.x >= rect.x && point.x < (rect.x + rect.w)&&
@@ -99,7 +99,7 @@ SDL_Rect Worm::getCollisionHitbox(){
     return rect;
 }
 
-double Worm::checkHorizontalCollision(const std::list<SDL_Point>& points, const SDL_Rect other_worm_hitbox){
+double Worm::checkHorizontalCollision(const std::vector<SDL_Point>& points, const SDL_Rect other_worm_hitbox){
     if(this->hSpeed==0 || (this->hSpeed < 0 && this->x == 0) || (this->hSpeed>0 && this->x + WORM_WIDTH == SCREEN_WIDTH))
         return 0;
 
@@ -167,7 +167,7 @@ double Worm::checkHorizontalCollision(const std::list<SDL_Point>& points, const 
     }
 }
 
-void Worm::climbSlope(const std::list<SDL_Point>& points, SDL_Rect collision_box){
+void Worm::climbSlope(const std::vector<SDL_Point>& points, SDL_Rect collision_box){
     SDL_Rect margin_box = {collision_box.x, collision_box.y+collision_box.h, collision_box.w, WORM_HEIGHT - (collision_box.y-(int)this->y) - collision_box.h};
     int dy = 0;
     bool ok = false;
@@ -195,7 +195,7 @@ void Worm::climbSlope(const std::list<SDL_Point>& points, SDL_Rect collision_box
     }
 }
 
-double Worm::checkVerticalCollision(const std::list<SDL_Point>& points, const SDL_Rect other_worm_hitbox){
+double Worm::checkVerticalCollision(const std::vector<SDL_Point>& points, const SDL_Rect other_worm_hitbox){
     if(this->vSpeed==0 || (this->vSpeed < 0 && this->y == 0) || (this->vSpeed > 0 && this->y + WORM_HEIGHT == SCREEN_HEIGHT))
         return 0;
 
@@ -257,7 +257,7 @@ double Worm::checkVerticalCollision(const std::list<SDL_Point>& points, const SD
     return dy;
 }
 
-double Worm::hasSteppedInVoid(const std::list<SDL_Point>& points){
+double Worm::hasSteppedInVoid(const std::vector<SDL_Point>& points){
     SDL_Rect collision_box = getCollisionHitbox();
     SDL_Rect margin_box = {collision_box.x, collision_box.y+collision_box.h, collision_box.w, WORM_HEIGHT - (collision_box.y-(int)this->y) - collision_box.h};
     double dy = 0;
@@ -281,7 +281,7 @@ double Worm::hasSteppedInVoid(const std::list<SDL_Point>& points){
     return WORM_FALLING_SPEED/(double)FRAMERATE;
 }
 
-void Worm::update(const std::list<SDL_Point>& points, const SDL_Rect other_worm_hitbox){
+void Worm::update(const std::vector<SDL_Point>& points, const SDL_Rect other_worm_hitbox){
     if (this->hSpeed != 0){
         double dx = checkHorizontalCollision(points, other_worm_hitbox);
         if (this->vSpeed>=0){

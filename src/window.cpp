@@ -10,7 +10,7 @@ WindowApp::WindowApp()
     }
     this->worm1 = new Worm(this->renderer, 70, 0);
     this->worm2 = new Worm(this->renderer, 1100, 0);
-    this->timerText = createTextTexture(this->renderer, std::to_string((int)(timer / FRAME_RATE)), {255, 0, 0, 255}, 70, 50);
+    this->timerText = createTextTexture(this->renderer, std::to_string((int)(timer / FRAMERATE)), {255, 0, 0, 255}, 70, 50);
     this->player1Name = createTextTexture(this->renderer, "player1", {0, 0, 0, 255}, 35, 25);
     this->player2Name = createTextTexture(this->renderer, "player2", {0, 0, 0, 255}, 35, 25);
     this->player1Health = createTextTexture(this->renderer, std::to_string(this->worm1->getHealth()), {0, 0, 0, 255}, 70, 50);
@@ -203,7 +203,7 @@ void WindowApp::update()
 
     this->timer--;
     SDL_DestroyTexture(this->timerText);
-    this->timerText = createTextTexture(this->renderer, std::to_string((int)(this->timer/FRAME_RATE)), {255,0,0, 255}, 70,50);
+    this->timerText = createTextTexture(this->renderer, std::to_string((int)(this->timer/FRAMERATE)), {255,0,0, 255}, 70,50);
     this->worm1->update(ground->getPoints(), this->worm2->getHitbox());
     if (this->worm1->getHealth() <= 0)
         this->quit = true;
