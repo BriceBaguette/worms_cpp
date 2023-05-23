@@ -1,3 +1,6 @@
+#ifndef WORM
+#define WORM
+
 #include<SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <iostream>
@@ -56,3 +59,5 @@ class Worm {
         std::tuple<bool, double, SDL_Rect, SDL_Rect> fire();
         void close();
 };
+
+#endif

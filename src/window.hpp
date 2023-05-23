@@ -1,3 +1,6 @@
+#ifndef WINDOW
+#define WINDOW
+
 #include <SDL2/SDL.h>
 #include "worm.hpp"
 #include "defs.hpp"
@@ -76,5 +79,4 @@ public:
     bool getQuit();
 };
 
-
-
+#endif

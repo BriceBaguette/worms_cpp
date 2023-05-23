@@ -1,3 +1,6 @@
+#ifndef ENVIRONMENT
+#define ENVIRONMENT
+
 #include "defs.hpp"
 #include <SDL2/SDL.h>
 #include <iostream>
@@ -33,3 +36,4 @@ public:
     Platform(int x, int y);
 };
 
+#endif
