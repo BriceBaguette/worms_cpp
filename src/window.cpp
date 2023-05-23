@@ -17,6 +17,8 @@ WindowApp::WindowApp()
     this->player2Health = createTextTexture(this->renderer, std::to_string(this->worm2->getHealth()), {0, 0, 0, 255}, 70, 50);
     this->curr_worm = this->worm1;
     this->ground = new Ground();
+    this->platform1 = new Platform(200,200);
+    this->platform2 = new Platform(700,200);
 }
 
 bool WindowApp::init()
@@ -157,6 +159,8 @@ void WindowApp::render()
     this->worm1->render(this->renderer);
     this->worm2->render(this->renderer);
     this->ground->render(this->renderer);
+    this->platform1->render(this->renderer);
+    this->platform2->render(this->renderer);
     if (this->curr_projectile != nullptr)
         this->curr_projectile->render(this->renderer);
     this->renderText(this->renderer, this->timerText, 620, 20);
@@ -175,6 +179,7 @@ void WindowApp::update()
 {
     if (this->timer == 0)
     {
+        this->curr_worm->setVSPeed(WORM_FALLING_SPEED);
         this->curr_worm->setHSPeed(0);
         if (this->curr_worm == this->worm1)
         {
@@ -206,7 +211,6 @@ void WindowApp::update()
     {
         if (!this->curr_projectile->update())
         {
-            explodeProjectile(false);
         }
     if(this->curr_projectile != nullptr){
         SDL_Rect hitbox = this->worm1->getHitbox();
@@ -366,7 +370,6 @@ void WindowApp::explodeProjectile(bool hit)
         if (this->worm1->getHealth() <= 0)
             this->quit = true;
     }
-
     delete this->curr_projectile;
     this->curr_projectile = nullptr;
 }

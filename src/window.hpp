@@ -1,7 +1,7 @@
 #include <SDL2/SDL.h>
 #include "worm.hpp"
 #include "defs.hpp"
-#include "ground.hpp"
+#include "environment.hpp"
 #include "projectile.hpp"
 #include "vector"
 #include <SDL2/SDL_ttf.h>
@@ -34,6 +34,10 @@ private:
     SDL_Texture* player2Name = nullptr;
 
     Ground* ground = NULL;
+
+    Platform* platform1 = NULL;
+
+    Platform* platform2 = NULL;
 
     bool quit = false;
 

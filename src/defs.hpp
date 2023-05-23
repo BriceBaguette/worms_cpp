@@ -57,4 +57,7 @@
 #define POWER_BAR_WIDTH 400               //pixel
 #define POWER_BAR_HEIGHT 50               //pixel
 
+#define PLATFORM_WIDTH 300
+#define PLATFORM_HEIGHT 10
+
 #endif
