@@ -49,7 +49,7 @@ bool Projectile::update(){
 bool Projectile::checkCollision(const std::vector<SDL_Point>& points){
 
     SDL_Rect projectile_hitbox;
-    if((this->angle>45 && this->angle<135) || (this->angle<-45 && this->angle>-135))    //in that case the hit box is rotated by 90 degrees to be closer to the true orientation of the projectile
+    if(abs(this->angle) > 45)    //in that case the hit box is rotated by 90 degrees to be closer to the true orientation of the projectile
         projectile_hitbox = {(int)(this->center_x-this->height/2.), (int)(this->center_y-this->width/2.), this->height, this->width};
     else
         projectile_hitbox = {(int)(this->center_x-this->width/2.), (int)(this->center_y-this->height/2.), this->width, this->height};
@@ -66,7 +66,7 @@ bool Projectile::checkCollision(const std::vector<SDL_Point>& points){
 bool Projectile::checkCollision(const SDL_Rect& hitbox){
 
     SDL_Rect projectile_hitbox;
-    if((this->angle>45 && this->angle<135) || (this->angle<-45 && this->angle>-135))    //in that case the hit box is rotated by 90 degrees to be closer to the true orientation of the projectile
+    if(abs(this->angle) > 45)    //in that case the hit box is rotated by 90 degrees to be closer to the true orientation of the projectile
         projectile_hitbox = {(int)this->center_x-this->height/2, (int)this->center_y-this->width/2, this->height, this->width};
     else
         projectile_hitbox = {(int)this->center_x-this->width/2, (int)this->center_y-this->height/2, this->width, this->height};
@@ -115,7 +115,7 @@ void Projectile::computeStartingPosition(std::tuple<bool, double, SDL_Rect, SDL_
             this->center_y = weapon_center_y;
         }
         else{
-            this->center_x = (double) worm_center_x - worm_rect.w/2. + this->width/2.;
+            this->center_x = (double) worm_center_x - worm_rect.w/2. - this->width/2.;
             this->center_y = weapon_center_y;
         }
         return;

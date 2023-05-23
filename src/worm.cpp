@@ -74,8 +74,13 @@ bool Worm::isWeaponReady(){
     return false;
 }
 
+SDL_Rect Worm::getHitbox(){
+    SDL_Rect rect = {(int)this->x, (int)this->y, WORM_WIDTH, WORM_HEIGHT};
+    return rect;
+}
+
 bool Worm::checkCollision(const std::vector<SDL_Point>& points) {
-    SDL_Rect rect = this->getCollisionHitbox();
+    SDL_Rect rect = this->getHitbox();
     for (const SDL_Point& point : points) {
         if (point.x >= rect.x && point.x < (rect.x + rect.w)&&
             point.y >= rect.y && point.y < (rect.y + rect.h)) {
@@ -85,17 +90,19 @@ bool Worm::checkCollision(const std::vector<SDL_Point>& points) {
     return false;  // No collision
 }
 
-SDL_Rect Worm::getHitbox(){
-    SDL_Rect rect = {(int)this->x, (int)this->y, WORM_WIDTH, WORM_HEIGHT};
-    return rect;
-}
-
 SDL_Rect Worm::getCollisionHitbox(){
     int x = this->x;
     if(this->flip){
         x += 10;
     }
-    SDL_Rect rect = {x, (int)this->y+10, WORM_WIDTH-10, WORM_HEIGHT-15};
+    SDL_Rect rect = {x, (int)this->y+5, WORM_WIDTH-10, WORM_HEIGHT-10};
+    return rect;
+}
+
+SDL_Rect Worm::getGroundCollisionHitbox(){
+    SDL_Rect rect = this->getCollisionHitbox();
+    rect.x += (int) rect.w/4.;
+    rect.w = (int) rect.w/2.;
     return rect;
 }
 
@@ -104,16 +111,19 @@ double Worm::checkHorizontalCollision(const std::vector<SDL_Point>& points, cons
         return 0;
 
     int mod = this->flip ? 1 : -1;
-    SDL_Rect box = this->getCollisionHitbox();
-    box.x += mod * -1;
+    SDL_Rect box = this->getHitbox();
+    
+    SDL_Rect ground_box = this->getGroundCollisionHitbox();
+    ground_box.x += mod;
     for (const SDL_Point& point : points)
-        if (point.x >= box.x && point.x < (box.x + box.w)&&
-            point.y >= box.y && point.y < (box.y + box.h))
+        if (point.x >= ground_box.x && point.x < (ground_box.x + ground_box.w)&&
+            point.y >= ground_box.y && point.y < (ground_box.y + ground_box.h))
                 return 0;
-    box.x -= mod * -1;
+    ground_box.x -= mod;
 
     double dx = this->hSpeed / (double)FRAMERATE;
-    box.x += mod * -1 * dx;
+    ground_box.x += dx;
+    box.x += dx;
     bool ok = false;
     bool ground_collision = true;
     bool worm_collision = true;
@@ -124,8 +134,9 @@ double Worm::checkHorizontalCollision(const std::vector<SDL_Point>& points, cons
         if (ground_collision){
             ground_collision = false;
             for (const SDL_Point& point : points) {
-                if (point.x >= box.x && point.x < (box.x + box.w)&&
-                    point.y >= box.y && point.y < (box.y + box.h)) {
+                if (point.x >= ground_box.x && point.x < (ground_box.x + ground_box.w)&&
+                    point.y >= ground_box.y && point.y < (ground_box.y + ground_box.h)) {
+                        ground_box.x += mod * -1;
                         box.x += mod * -1;
                         dx += mod * -1;
                         ok = false;
@@ -139,6 +150,7 @@ double Worm::checkHorizontalCollision(const std::vector<SDL_Point>& points, cons
             worm_collision = false;
             if (SDL_HasIntersection(&box, &other_worm_hitbox)){
                 box.x += mod * -1;
+                ground_box.x += mod * -1;
                 dx += mod * -1;
                 ok = false;
                 worm_collision = true;
@@ -149,6 +161,7 @@ double Worm::checkHorizontalCollision(const std::vector<SDL_Point>& points, cons
             screen_border_collision = false;
             if (box.x < 0 || box.x + WORM_WIDTH > SCREEN_WIDTH){
                 box.x += mod * -1;
+                ground_box.x += mod * -1;
                 dx += mod * -1;
                 ok = false;
                 screen_border_collision = true;
@@ -157,7 +170,7 @@ double Worm::checkHorizontalCollision(const std::vector<SDL_Point>& points, cons
     }
 
     if (ok){
-        climbSlope(points, box);
+        climbSlope(points, ground_box);
         return dx;
     }
     else{
@@ -170,6 +183,7 @@ double Worm::checkHorizontalCollision(const std::vector<SDL_Point>& points, cons
 void Worm::climbSlope(const std::vector<SDL_Point>& points, SDL_Rect collision_box){
     SDL_Rect margin_box = {collision_box.x, collision_box.y+collision_box.h, collision_box.w, WORM_HEIGHT - (collision_box.y-(int)this->y) - collision_box.h};
     int dy = 0;
+
     bool ok = false;
     while(!ok){
         ok = true;
@@ -200,12 +214,13 @@ double Worm::checkVerticalCollision(const std::vector<SDL_Point>& points, const 
         return 0;
 
     int mod = this->vSpeed>0 ? 1 : -1;
-    SDL_Rect collision_box = this->getCollisionHitbox();
-    SDL_Rect box = this->getHitbox();
-    SDL_Rect use_box = mod>0 ? box : collision_box;
+    SDL_Rect collision_box = this->getHitbox();
+    SDL_Rect ground_box = this->getGroundCollisionHitbox();
+    ground_box.h += WORM_HEIGHT - (ground_box.y-(int)this->y) - ground_box.h;
 
     double dy = this->vSpeed / (double)FRAMERATE;
-    use_box.y += dy;
+    ground_box.y += dy;
+    collision_box.y += dy;
     bool ok = false;
     bool ground_collision = true;
     bool worm_collision = true;
@@ -216,9 +231,10 @@ double Worm::checkVerticalCollision(const std::vector<SDL_Point>& points, const 
         if (ground_collision){
             ground_collision = false;
             for (const SDL_Point& point : points) {
-                if (point.x >= use_box.x && point.x < (use_box.x + use_box.w)&&
-                    point.y >= use_box.y && point.y < (use_box.y + use_box.h)) {
-                        use_box.y += mod * -1;
+                if (point.x >= ground_box.x && point.x < (ground_box.x + ground_box.w)&&
+                    point.y >= ground_box.y && point.y < (ground_box.y + ground_box.h)) {
+                        ground_box.y += mod * -1;
+                        collision_box.y += mod * -1;
                         dy += mod * -1;
                         ok = false;
                         ground_collision = true;
@@ -229,8 +245,9 @@ double Worm::checkVerticalCollision(const std::vector<SDL_Point>& points, const 
 
         if (worm_collision){
             worm_collision = false;
-            if (SDL_HasIntersection(&use_box, &other_worm_hitbox)){
-                use_box.y += mod * -1;
+            if (SDL_HasIntersection(&collision_box, &other_worm_hitbox)){
+                collision_box.y += mod * -1;
+                ground_box.y += mod * -1;
                 dy += mod * -1;
                 ok = false;
                 worm_collision = true;
@@ -239,8 +256,9 @@ double Worm::checkVerticalCollision(const std::vector<SDL_Point>& points, const 
 
         if (screen_border_collision){
             screen_border_collision = false;
-            if (box.y < 0 || box.y + WORM_HEIGHT > SCREEN_HEIGHT){
-                box.y += mod * -1;
+            if (collision_box.y < 0 || collision_box.y + WORM_HEIGHT > SCREEN_HEIGHT){
+                collision_box.y += mod * -1;
+                ground_box.y += mod * -1;
                 dy += mod * -1;
                 ok = false;
                 screen_border_collision = true;
@@ -257,9 +275,11 @@ double Worm::checkVerticalCollision(const std::vector<SDL_Point>& points, const 
     return dy;
 }
 
-double Worm::hasSteppedInVoid(const std::vector<SDL_Point>& points){
-    SDL_Rect collision_box = getCollisionHitbox();
-    SDL_Rect margin_box = {collision_box.x, collision_box.y+collision_box.h, collision_box.w, WORM_HEIGHT - (collision_box.y-(int)this->y) - collision_box.h};
+double Worm::hasSteppedInVoid(const std::vector<SDL_Point>& points, const SDL_Rect other_worm_hitbox){
+    SDL_Rect collision_box = this->getHitbox();
+    SDL_Rect ground_box = getGroundCollisionHitbox();
+    SDL_Rect margin_box = {ground_box.x, ground_box.y+ground_box.h, ground_box.w, WORM_HEIGHT - (ground_box.y-(int)this->y) - ground_box.h};
+
     double dy = 0;
     bool ok = true;
     while(ok && dy <= WORM_FALLING_SPEED/(double)FRAMERATE){
@@ -270,9 +290,14 @@ double Worm::hasSteppedInVoid(const std::vector<SDL_Point>& points){
                     break;
             }
         }
+
+        if (SDL_HasIntersection(&collision_box, &other_worm_hitbox))
+            ok = false;
+        
         if (ok){
             dy++;
             margin_box.y++;
+            collision_box.y++;
         }
     }
 
@@ -299,12 +324,11 @@ void Worm::update(const std::vector<SDL_Point>& points, const SDL_Rect other_wor
     if (this->vSpeed != 0){
         double dy = checkVerticalCollision(points, other_worm_hitbox);
         this->y += dy;
-        if (this->vSpeed>0 && dy<this->vSpeed/(double)FRAMERATE){
+        if (this->vSpeed>0 && dy<this->vSpeed/(double)FRAMERATE)
             this->vSpeed = 0;
-        }
     }
     else {
-        double dy = hasSteppedInVoid(points);
+        double dy = hasSteppedInVoid(points, other_worm_hitbox);
         this->y += dy;
         if (dy > 0 && dy == WORM_FALLING_SPEED/(double)FRAMERATE)
             this->vSpeed = WORM_FALLING_SPEED;
@@ -332,7 +356,7 @@ void Worm::update(const std::vector<SDL_Point>& points, const SDL_Rect other_wor
 void Worm::render(SDL_Renderer *renderer)
 {   
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
     SDL_Rect destinationRect = {(int)this->x, (int)this->y, WORM_WIDTH, WORM_HEIGHT };
     SDL_Texture* sprite = NULL;
     SDL_Texture* weaponSprite = NULL;

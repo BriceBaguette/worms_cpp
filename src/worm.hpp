@@ -33,9 +33,10 @@ class Worm {
         double weapon_angle = 0.;
 
         SDL_Rect getCollisionHitbox();
+        SDL_Rect getGroundCollisionHitbox();
         double checkHorizontalCollision(const std::vector<SDL_Point>& points, const SDL_Rect other_worm_hitbox);
         double checkVerticalCollision(const std::vector<SDL_Point>& points, const SDL_Rect other_worm_hitbox);
-        double hasSteppedInVoid(const std::vector<SDL_Point>& points);
+        double hasSteppedInVoid(const std::vector<SDL_Point>& points, const SDL_Rect other_worm_hitbox);
         void climbSlope(const std::vector<SDL_Point>& points, SDL_Rect collision_box);
     
     public:

@@ -159,11 +159,11 @@ void WindowApp::render()
     SDL_RenderClear(this->renderer);
 
     // Render the scene
-    this->worm1->render(this->renderer);
-    this->worm2->render(this->renderer);
     this->ground->render(this->renderer);
     this->platform1->render(this->renderer);
     this->platform2->render(this->renderer);
+    this->worm1->render(this->renderer);
+    this->worm2->render(this->renderer);
     if (this->curr_projectile != nullptr)
         this->curr_projectile->render(this->renderer);
     this->renderText(this->renderer, this->timerText, 620, 20);
@@ -207,6 +207,7 @@ void WindowApp::update()
     this->timer--;
     SDL_DestroyTexture(this->timerText);
     this->timerText = createTextTexture(this->renderer, std::to_string((int)(this->timer/FRAMERATE)), {255,0,0, 255}, 70,50);
+    
     this->worm1->update(ground->getPoints(), this->worm2->getHitbox());
     if (this->worm1->getHealth() <= 0)
         this->quit = true;
