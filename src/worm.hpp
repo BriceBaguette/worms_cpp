@@ -10,17 +10,18 @@
 
 class Worm {
     private:
-        int x = 200;
-        int y = 200;
+        double x = 200;
+        double y = 200;
         SDL_Texture* restSprite=NULL;
         std::vector<SDL_Texture*> movingSprite;
         SDL_Texture* fallingSprite = NULL;
         SDL_Texture* jetpackSprite = NULL;
         SDL_Texture* bazookaSprite = NULL;
         SDL_Texture* shotgunSprite = NULL;
-        int vSpeed = WORM_FALLING_SPEED;
-        int hSpeed = 0;       
+        double vSpeed = WORM_FALLING_SPEED;
+        double hSpeed = 0;       
         bool flip = false;
+        int frames_before_fall = (int)(FALLING_STARTING_TIME * FRAMERATE);
         int health = WORM_INITIAL_HEALTH;
         bool aiming = false;
         bool aiming_upwards = false;
@@ -28,6 +29,12 @@ class Worm {
         std::map<std::string, int> weapon_amunition_map{{"bazooka", BAZOOKA_INITIAL_AMMO}, {"gun", SHOTGUN_INITIAL_AMMO}};
         std::map<std::string, int> weapon_reload_time_map{{"bazooka", 0}, {"gun", 0}};
         double weapon_angle = 0.;
+
+        SDL_Rect getCollisionHitbox();
+        double checkHorizontalCollision(const std::list<SDL_Point>& points, const SDL_Rect other_worm_hitbox);
+        double checkVerticalCollision(const std::list<SDL_Point>& points, const SDL_Rect other_worm_hitbox);
+        double hasSteppedInVoid(const std::list<SDL_Point>& points);
+        void climbSlope(const std::list<SDL_Point>& points, SDL_Rect collision_box);
     
     public:
 
@@ -39,7 +46,7 @@ class Worm {
 
         // Function that manage the game behaviour and display of the worm
         void render(SDL_Renderer *renderer);
-        void update(const std::list<SDL_Point>& points);
+        void update(const std::list<SDL_Point>& points, const SDL_Rect other_worm_hitbox);
 
         // Function to control worm's behaviour
         bool checkCollision(const std::list<SDL_Point>& points);
@@ -49,6 +56,7 @@ class Worm {
         int getWeaponAmunition();
         double getWeaponAngle();
         std::string getWeapon();
+        double getVSpeed();
         void setWeapon(const std::string& weapon);
         int setDamage(int damage);
         void setHSPeed(int speed);

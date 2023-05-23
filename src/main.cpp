@@ -15,7 +15,7 @@ int main()
         app.render();
         app.event();
         app.update();
-        int targetFrameTime = (1000/FRAME_RATE);
+        int targetFrameTime = (1000/FRAMERATE);
         int frameTime = SDL_GetTicks() - frameStart;
         if (frameTime < targetFrameTime) {
             SDL_Delay(targetFrameTime - frameTime);

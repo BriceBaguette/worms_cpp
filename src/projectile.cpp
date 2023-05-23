@@ -25,10 +25,6 @@ bool Projectile::update(){
     //compute vertical speed variation accordingly to gravity (dv = a*dt)
     double dy_gravity =  GRAVITY/(double)FRAMERATE;
     //compute speed variation due to drag forces (dv = F/m * dt)
-    
-    std::cout << "h_speed:" << this->h_speed << std::endl;
-    std::cout << "v_speed:" << this->v_speed << std::endl;
-    std::cout << "angle:" << this->angle << std::endl;
     int mod = -1.;
     if (this->flip)
         mod = 1.;
@@ -46,12 +42,7 @@ bool Projectile::update(){
         angle *= -1;
     }
     this->angle = angle;
-
-    std::cout << "drag_force:" << drag_force << std::endl;
-    std::cout << "h_speed:" << this->h_speed << std::endl;
-    std::cout << "v_speed:" << this->v_speed << std::endl;
-    std::cout << "arctan(-vspeed/hspeed):" << atan(-this->v_speed/this->h_speed) *180.0/M_PI << std::endl;
-    std::cout << "angle:" << this->angle << std::endl;
+    
     return true;
 }
 

@@ -42,7 +42,7 @@ bool WindowApp::init()
             exit(-1);
         }
         loadFont("./assets/assets/font/OpenSans-Bold.ttf", 28);
-        this->timerText = createTextTexture(this->renderer, std::to_string((int) (timer/FRAME_RATE)),{255,0,0, 255}, 70,50);
+        this->timerText = createTextTexture(this->renderer, std::to_string((int) (timer/FRAMERATE)),{255,0,0, 255}, 70,50);
         return success;
     }
 }
@@ -153,8 +153,12 @@ void WindowApp::render()
 void WindowApp::update()
 {
     this->timer--;
-    this->timerText = createTextTexture(this->renderer, std::to_string((int)(this->timer/FRAME_RATE)), {255,0,0, 255}, 70,50);
-    this->worm1->update(ground->getPoints());
+    this->timerText = createTextTexture(this->renderer, std::to_string((int)(this->timer/FRAMERATE)), {255,0,0, 255}, 70,50);
+    SDL_Rect rect = {-1, -1, 0, 0};
+    this->worm1->update(ground->getPoints(), rect);     //change when worm2 implemented!
+
+    if (this->worm1->getHealth() <= 0)
+        this->quit = true;
 
     if (this->curr_projectile != nullptr && !this->curr_projectile->update())
         explodeProjectile(false);
@@ -193,14 +197,16 @@ void WindowApp::event()
             {
             case SDLK_LEFT:
                 // Move image to the left
-                this->worm1->setHSPeed(-WORM_SPEED_MODIFIER);
+                if (this->curr_worm->getVSpeed() != WORM_JETPACK_SPEED)
+                    this->curr_worm->setHSPeed(-WORM_SPEED_MODIFIER);
                 break;
             case SDLK_RIGHT:
                 // Move image to the right
-                this->worm1->setHSPeed(WORM_SPEED_MODIFIER);
+                if (this->curr_worm->getVSpeed() != WORM_JETPACK_SPEED)
+                    this->curr_worm->setHSPeed(WORM_SPEED_MODIFIER);
                 break;
             case SDLK_SPACE:
-                if (!this->curr_worm_in_air){
+                if (this->curr_worm->getVSpeed() == 0){
                     //If the playing worm is using its jetpack or falling, it cannot shoot
                     if(!this->curr_worm_shooting && this->curr_worm->isWeaponReady() && this->curr_worm->getWeaponAmunition()>0){
                         //Starts the shooting process
@@ -225,6 +231,7 @@ void WindowApp::event()
                             explodeProjectile(hit);
                         }
                         
+                        this->shooting_power = MIN_SHOOTING_POWER;
                         this->curr_worm_shooting = false;
                         this->curr_worm_has_aimed = false;
                     }
@@ -234,6 +241,10 @@ void WindowApp::event()
                 if(this->curr_worm_shooting && !this->curr_worm_has_aimed){
                     //If at aiming step of shooting process, set current worm to aim upwards
                     this->curr_worm->setAiming(true, true);
+                }
+                else if(!this->curr_worm_shooting){
+                    this->curr_worm->setVSPeed(WORM_JETPACK_SPEED);
+                    this->curr_worm->setHSPeed(0);
                 }
                 break;
             case SDLK_DOWN:
@@ -272,6 +283,9 @@ void WindowApp::event()
                 if(this->curr_worm_shooting && !this->curr_worm_has_aimed){
                     //If at aiming step of shooting process, set current worm to stop aiming upwards
                     this->curr_worm->setAiming(false, false);
+                }
+                else if(!this->curr_worm_shooting){
+                    this->curr_worm->setVSPeed(0);
                 }
                 break;
             case SDLK_DOWN:

@@ -20,10 +20,6 @@ private:
 
     SDL_Texture* timerText = nullptr;
 
-    SDL_Color* power_bar_empty_color;
-
-    SDL_Color* power_bar_full_color;
-
     SDL_Texture* player1Health = nullptr;
 
     SDL_Texture* player2Health = nullptr;

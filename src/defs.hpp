@@ -5,13 +5,14 @@
 #define SCREEN_HEIGHT  720
 #define TIMER 30*30
 #define FRAMERATE 30                        //frame/sec
+#define FALLING_STARTING_TIME 0.3           //sec
 
-#define WORM_SPEED_MODIFIER 75/30
-#define WORM_FALLING_SPEED 100/30
+#define WORM_SPEED_MODIFIER 75             //pixel/sec
+#define WORM_FALLING_SPEED 100             //pixel/sec
+#define WORM_JETPACK_SPEED -75             //pixel/sec
 #define WORM_WIDTH 30
 #define WORM_HEIGHT 50
 #define GROUND_HEIGHT 420
-#define FRAME_RATE 30
 #define WORM_INITIAL_HEALTH 100
 #define WORM_INITIAL_WEAPON "bazooka"
 
