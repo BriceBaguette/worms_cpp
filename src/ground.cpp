@@ -8,7 +8,6 @@ Ground::Ground()
             this->points.push_back({x, y});
         }
     }
-    pointVector.assign(points.begin(), points.end());
 }
 
 int Ground::calculateY(int x)
@@ -29,21 +28,24 @@ void Ground::render(SDL_Renderer *renderer)
 {
     // Set the drawing color to white
     SDL_SetRenderDrawColor(renderer, 128, 96, 20, 255);
-    SDL_RenderDrawPoints(renderer, &pointVector[0], pointVector.size());
+    SDL_RenderDrawPoints(renderer, &points[0], points.size());
 }
-std::list<SDL_Point> Ground::getPoints(){
+std::vector<SDL_Point> Ground::getPoints(){
     return this->points;
 }
 
-void Ground::destroyPoints(std::list<SDL_Point> destroyed_zone){
-    for (auto& point : destroyed_zone)
-        this->points.remove_if([point](SDL_Point p){ return (p.x==point.x && p.y==point.y); });
-    pointVector.clear();
-    pointVector.assign(points.begin(), points.end());
+void Ground::destroyPoints(std::vector<SDL_Point> destroyed_zone){
+    for (const auto& point : destroyed_zone) {
+        points.erase(std::remove_if(points.begin(), points.end(),
+            [point](const SDL_Point& p) {
+                return (p.x == point.x && p.y == point.y);
+            }),
+            points.end()
+        );
+    }
 }
 
 void Ground::close()
 {
     points.clear();
-    pointVector.clear();
 }

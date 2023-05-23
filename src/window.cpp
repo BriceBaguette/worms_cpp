@@ -337,7 +337,7 @@ bool WindowApp::getQuit()
 
 void WindowApp::explodeProjectile(bool hit)
 {
-    std::list<SDL_Point> explosion_zone = this->curr_projectile->getExplosionZone();
+    std::vector<SDL_Point> explosion_zone = this->curr_projectile->getExplosionZone();
     this->ground->destroyPoints(explosion_zone);
     if (hit || this->worm1->checkCollision(explosion_zone))
     {
