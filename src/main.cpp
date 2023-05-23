@@ -17,9 +17,7 @@ int main()
         app.update();
         int targetFrameTime = (1000/FRAME_RATE);
         int frameTime = SDL_GetTicks() - frameStart;
-        printf("%d\n",frameTime);
         if (frameTime < targetFrameTime) {
-            printf("delaying \n");
             SDL_Delay(targetFrameTime - frameTime); 
         }
     }
