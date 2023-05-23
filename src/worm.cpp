@@ -1,6 +1,6 @@
 #include "worm.hpp"
 
-Worm::Worm(SDL_Renderer *renderer, int xCoord,int yCoord) :  x(xCoord), y(yCoord) 
+Worm::Worm(SDL_Renderer *renderer, int xCoord,int yCoord, bool isFlipped) :  x(xCoord), y(yCoord), flip(isFlipped) 
 {
     this->loadAll(renderer);
 }
@@ -48,6 +48,7 @@ void Worm::setAiming(bool aiming, bool upwards){
 }
 
 std::tuple<bool, double, SDL_Rect, SDL_Rect> Worm::fire(){
+    //returns the flip boolean, the angle of the weapon, the weapon and worm boxes for the projectile to be able to compute its initial position
     double angle = this->weapon_angle;
     SDL_Rect worm_rect = {(int)this->x, (int)this->y, WORM_WIDTH, WORM_HEIGHT };
     int mod = this->flip ? -1. : 1.;
@@ -75,6 +76,7 @@ bool Worm::isWeaponReady(){
 }
 
 SDL_Rect Worm::getHitbox(){
+    //the box of the worm
     SDL_Rect rect = {(int)this->x, (int)this->y, WORM_WIDTH, WORM_HEIGHT};
     return rect;
 }
@@ -90,23 +92,20 @@ bool Worm::checkCollision(const std::vector<SDL_Point>& points) {
     return false;  // No collision
 }
 
-SDL_Rect Worm::getCollisionHitbox(){
+SDL_Rect Worm::getGroundCollisionHitbox(){
+    //A hitbox, smaller than the worm's box, to compute if the worm is blocket by a terrain
     int x = this->x;
     if(this->flip){
         x += 10;
     }
     SDL_Rect rect = {x, (int)this->y+5, WORM_WIDTH-10, WORM_HEIGHT-10};
-    return rect;
-}
-
-SDL_Rect Worm::getGroundCollisionHitbox(){
-    SDL_Rect rect = this->getCollisionHitbox();
     rect.x += (int) rect.w/4.;
     rect.w = (int) rect.w/2.;
     return rect;
 }
 
 double Worm::checkHorizontalCollision(const std::vector<SDL_Point>& points, const SDL_Rect other_worm_hitbox){
+    //Move the worm horizontaly, if it is climbing up a slope, vertical translation is also applied. Returns the horizontal translation distance
     if(this->hSpeed==0 || (this->hSpeed < 0 && this->x == 0) || (this->hSpeed>0 && this->x + WORM_WIDTH == SCREEN_WIDTH))
         return 0;
 
@@ -117,7 +116,7 @@ double Worm::checkHorizontalCollision(const std::vector<SDL_Point>& points, cons
     ground_box.x += mod;
     for (const SDL_Point& point : points)
         if (point.x >= ground_box.x && point.x < (ground_box.x + ground_box.w)&&
-            point.y >= ground_box.y && point.y < (ground_box.y + ground_box.h))
+            point.y >= ground_box.y && point.y < (ground_box.y + ground_box.h))     //If blocked against some terrain, directly return 0
                 return 0;
     ground_box.x -= mod;
 
@@ -128,7 +127,7 @@ double Worm::checkHorizontalCollision(const std::vector<SDL_Point>& points, cons
     bool ground_collision = true;
     bool worm_collision = true;
     bool screen_border_collision = true;
-
+    //Begin with a translation distance equal to the speed, and decrease that distance one by one if a collision remains between the worm and the terrain/other worm/screen border
     while(!ok && (abs(dx) <= SCREEN_WIDTH)){
         ok = true;
         if (ground_collision){
@@ -181,6 +180,7 @@ double Worm::checkHorizontalCollision(const std::vector<SDL_Point>& points, cons
 }
 
 void Worm::climbSlope(const std::vector<SDL_Point>& points, SDL_Rect collision_box){
+    //Translates the worm vertically if he moved horizontaly up a slope
     SDL_Rect margin_box = {collision_box.x, collision_box.y+collision_box.h, collision_box.w, WORM_HEIGHT - (collision_box.y-(int)this->y) - collision_box.h};
     int dy = 0;
 
@@ -210,8 +210,13 @@ void Worm::climbSlope(const std::vector<SDL_Point>& points, SDL_Rect collision_b
 }
 
 double Worm::checkVerticalCollision(const std::vector<SDL_Point>& points, const SDL_Rect other_worm_hitbox){
-    if(this->vSpeed==0 || (this->vSpeed < 0 && this->y == 0) || (this->vSpeed > 0 && this->y + WORM_HEIGHT == SCREEN_HEIGHT))
+    //Same as checkHorizontalCollision but vertically
+    if (this->vSpeed==0 || (this->vSpeed < 0 && this->y == 0))
         return 0;
+    if (this->vSpeed > 0 && this->y + WORM_HEIGHT == SCREEN_HEIGHT){
+        this->health = 0;
+        return 0;
+    }
 
     int mod = this->vSpeed>0 ? 1 : -1;
     SDL_Rect collision_box = this->getHitbox();
@@ -276,6 +281,7 @@ double Worm::checkVerticalCollision(const std::vector<SDL_Point>& points, const 
 }
 
 double Worm::hasSteppedInVoid(const std::vector<SDL_Point>& points, const SDL_Rect other_worm_hitbox){
+    //If the worm has moved down a slope or out of a plateform, detect it and moves it vertically accordingly
     SDL_Rect collision_box = this->getHitbox();
     SDL_Rect ground_box = getGroundCollisionHitbox();
     SDL_Rect margin_box = {ground_box.x, ground_box.y+ground_box.h, ground_box.w, WORM_HEIGHT - (ground_box.y-(int)this->y) - ground_box.h};
@@ -478,20 +484,4 @@ SDL_Texture *Worm::loadMedia(SDL_Renderer *renderer, const char *path, int width
     SDL_FreeSurface(resizedSurface);
     SDL_FreeSurface(imageSurface);
     return wormSprite;
-}
-
-void Worm::close() {
-    // Free the textures
-    if (restSprite)
-        SDL_DestroyTexture(restSprite);
-    for (SDL_Texture* texture : movingSprite)
-        SDL_DestroyTexture(texture);
-    if (fallingSprite)
-        SDL_DestroyTexture(fallingSprite);
-    if (jetpackSprite)
-        SDL_DestroyTexture(jetpackSprite);
-    if (bazookaSprite)
-        SDL_DestroyTexture(bazookaSprite);
-    if (shotgunSprite)
-        SDL_DestroyTexture(shotgunSprite);
 }

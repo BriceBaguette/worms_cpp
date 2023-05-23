@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 #include "worm.hpp"
 #include "defs.hpp"
-#include "environment.hpp"
+#include "ground.hpp"
 #include "projectile.hpp"
 #include "vector"
 #include <SDL2/SDL_ttf.h>
@@ -14,60 +14,67 @@ class WindowApp
 private:
     //The window we'll be rendering to
     SDL_Window* gWindow = NULL;
-        
     //The surface contained by the window
     SDL_Renderer* renderer = NULL;
-
     TTF_Font* gFont = nullptr;
-
     double timer = TIMER;
 
-    SDL_Texture* timerText = nullptr;
-
-    SDL_Texture* player1Health = nullptr;
-
-    SDL_Texture* player2Health = nullptr;
-
-    SDL_Texture* player1Name = nullptr;
-
-    SDL_Texture* player2Name = nullptr;
+    SDL_Texture* timer_text = nullptr;
+    SDL_Rect timer_rect = {TIMER_X, TIMER_Y, TIMER_WIDTH, TIMER_HEIGHT};
+    SDL_Texture* player1_health = nullptr;
+    SDL_Rect player1_health_rect = {PLAYER1_HEALTH_X, PLAYER1_HEALTH_Y, PLAYER_HEALTH_WIDTH, PLAYER_HEALTH_HEIGHT};
+    SDL_Texture* player2_health = nullptr;
+    SDL_Rect player2_health_rect = {PLAYER2_HEALTH_X, PLAYER2_HEALTH_Y, PLAYER_HEALTH_WIDTH, PLAYER_HEALTH_HEIGHT};
+    SDL_Texture* player1_name = nullptr;
+    SDL_Rect player1_name_rect = {PLAYER1_NAME_X, PLAYER1_NAME_Y, PLAYER_NAME_WIDTH, PLAYER_NAME_HEIGHT};
+    SDL_Texture* player2_name = nullptr;
+    SDL_Rect player2_name_rect = {PLAYER2_NAME_X, PLAYER2_NAME_Y, PLAYER_NAME_WIDTH, PLAYER_NAME_HEIGHT};
+    SDL_Texture* bullet_sprite;
+    SDL_Texture* rocket_sprite;
 
     Ground* ground = NULL;
-
-    Platform* platform1 = NULL;
-
-    Platform* platform2 = NULL;
 
     bool quit = false;
 
     Worm* worm1 = NULL;
-
     Worm* worm2 = NULL;
-
     Worm* curr_worm = NULL;
-
     bool curr_worm_shooting = false;
-    
     bool curr_worm_has_aimed = false;
+    Projectile* curr_projectile = nullptr;
 
     int shooting_power = MIN_SHOOTING_POWER;
 
-    Projectile* curr_projectile = nullptr;
-
     void explodeProjectile(bool hit1, bool hit2);
-
-
     bool init();
     void loadFont(const std::string& fontPath, int fontSize);
-    void renderText(SDL_Renderer* renderer, SDL_Texture* texture, int x, int y);
+    SDL_Texture* loadMedia(SDL_Renderer *renderer, const char* path, int width, int height);
     void renderBar();
-    SDL_Texture* createTextTexture(SDL_Renderer *renderer, const std::string &text, SDL_Color textColor, int surfaceWidth, int surfaceHeight);
+    void renderWormsAmunitions();
+    SDL_Texture* createTextTexture(SDL_Renderer *renderer, const std::string &text, SDL_Color textColor);
     
 
 public:
     WindowApp();
+    ~WindowApp(){
+        if (curr_projectile != nullptr)
+            delete curr_projectile;
+        delete ground;
+        delete worm1;
+        delete worm2;
+        SDL_DestroyTexture(timer_text);
+        SDL_DestroyTexture(player1_health);
+        SDL_DestroyTexture(player2_health);
+        SDL_DestroyTexture(player1_name);
+        SDL_DestroyTexture(player2_name);
+        SDL_DestroyTexture(bullet_sprite);
+        SDL_DestroyTexture(rocket_sprite);
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(gWindow);
+        TTF_CloseFont(gFont);
+        SDL_Quit();
+    };
     void update();
-    void close();
     void render();
     void event();
     bool getQuit();

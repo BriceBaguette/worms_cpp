@@ -53,12 +53,39 @@
 #define MIN_SHOOTING_POWER 0                //pixel/sec
 #define MAX_SHOOTING_POWER 500              //pixel/sec
 
-#define POWER_BAR_X 730                   //pixel index
-#define POWER_BAR_Y 20                    //pixel index
-#define POWER_BAR_WIDTH 400               //pixel
-#define POWER_BAR_HEIGHT 50               //pixel
+#define PLATFORM_WIDTH 300                  //pixel
+#define PLATFORM_HEIGHT 10                  //pixel
 
-#define PLATFORM_WIDTH 300
-#define PLATFORM_HEIGHT 10
+#define PLAYER_NAME_WIDTH 35                //pixel
+#define PLAYER_NAME_HEIGHT 25               //pixel
+#define PLAYER_HEALTH_WIDTH 70              //pixel
+#define PLAYER_HEALTH_HEIGHT 50             //pixel
+
+#define PLAYER1_NAME_X 30                   //pixel index
+#define PLAYER1_NAME_Y 10                   //pixel index
+#define PLAYER2_NAME_X 1180                 //pixel index
+#define PLAYER2_NAME_Y 10                   //pixel index
+#define PLAYER1_HEALTH_X 30                 //pixel index
+#define PLAYER1_HEALTH_Y 20                 //pixel index
+#define PLAYER2_HEALTH_X 1180               //pixel index
+#define PLAYER2_HEALTH_Y 20                 //pixel index
+
+#define POWER_BAR_X 730                     //pixel index
+#define POWER_BAR_Y 20                      //pixel index
+#define POWER_BAR_WIDTH 400                 //pixel
+#define POWER_BAR_HEIGHT 50                 //pixel
+
+#define TIMER_X 620                         //pixel index
+#define TIMER_Y 20                          //pixel index
+#define TIMER_WIDTH 70                      //pixel
+#define TIMER_HEIGHT 50                     //pixel
+
+#define PLAYER1_AMUNITION_X 30              //pixel index
+#define PLAYER1_AMUNITION_Y 80              //pixel index
+#define PLAYER2_AMUNITION_X 1180            //pixel index
+#define PLAYER2_AMUNITION_Y 80              //pixel index
+
+#define AMUNITION_DISPLAY_ANGLE 45.         //deg
+#define AMUNITION_DISPLAY_SEPARATION 20     //pixel
 
 #endif

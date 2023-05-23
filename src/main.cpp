@@ -10,11 +10,14 @@ and may not be redistributed without written permission.*/
 int main()
 {
     WindowApp app;
-    while(!app.getQuit()){
+    bool quit = app.getQuit();
+    while(true){
         int frameStart = SDL_GetTicks();
-        app.render();
-        app.event();
-        app.update();
+        if(!quit){
+            app.render();
+            app.event();
+            app.update();
+        }
         int targetFrameTime = (1000/FRAMERATE);
         int frameTime = SDL_GetTicks() - frameStart;
         if (frameTime < targetFrameTime) {

@@ -22,7 +22,7 @@ class Worm {
         SDL_Texture* shotgunSprite = NULL;
         double vSpeed = WORM_FALLING_SPEED;
         double hSpeed = 0;       
-        bool flip = false;
+        bool flip;
         int frames_before_fall = (int)(FALLING_STARTING_TIME * FRAMERATE);
         int health = WORM_INITIAL_HEALTH;
         bool aiming = false;
@@ -32,7 +32,6 @@ class Worm {
         std::map<std::string, int> weapon_reload_time_map{{"bazooka", 0}, {"gun", 0}};
         double weapon_angle = 0.;
 
-        SDL_Rect getCollisionHitbox();
         SDL_Rect getGroundCollisionHitbox();
         double checkHorizontalCollision(const std::vector<SDL_Point>& points, const SDL_Rect other_worm_hitbox);
         double checkVerticalCollision(const std::vector<SDL_Point>& points, const SDL_Rect other_worm_hitbox);
@@ -41,11 +40,28 @@ class Worm {
     
     public:
 
-        Worm(SDL_Renderer *renderer,int x,int y);
+        Worm(SDL_Renderer *renderer, int x, int y, bool isFlipped);
+
+        ~Worm(){
+            
+            // Free the textures
+            if (restSprite)
+                SDL_DestroyTexture(restSprite);
+            for (SDL_Texture* texture : movingSprite)
+                SDL_DestroyTexture(texture);
+            if (fallingSprite)
+                SDL_DestroyTexture(fallingSprite);
+            if (jetpackSprite)
+                SDL_DestroyTexture(jetpackSprite);
+            if (bazookaSprite)
+                SDL_DestroyTexture(bazookaSprite);
+            if (shotgunSprite)
+                SDL_DestroyTexture(shotgunSprite);
+        }
 
         // Function to load sprite        
         void loadAll(SDL_Renderer *renderer);
-        SDL_Texture* loadMedia(SDL_Renderer *renderer,const char* path, int width, int height);
+        SDL_Texture* loadMedia(SDL_Renderer *renderer, const char* path, int width, int height);
 
         // Function that manage the game behaviour and display of the worm
         void render(SDL_Renderer *renderer);

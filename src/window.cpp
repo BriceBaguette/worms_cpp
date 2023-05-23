@@ -8,17 +8,21 @@ WindowApp::WindowApp()
         printf("Failed to initialize!\n");
         exit(-1);
     }
-    this->worm1 = new Worm(this->renderer, 70, 0);
-    this->worm2 = new Worm(this->renderer, 1100, 0);
-    this->timerText = createTextTexture(this->renderer, std::to_string((int)(timer / FRAMERATE)), {255, 0, 0, 255}, 70, 50);
-    this->player1Name = createTextTexture(this->renderer, "player1", {0, 0, 0, 255}, 35, 25);
-    this->player2Name = createTextTexture(this->renderer, "player2", {0, 0, 0, 255}, 35, 25);
-    this->player1Health = createTextTexture(this->renderer, std::to_string(this->worm1->getHealth()), {0, 0, 0, 255}, 70, 50);
-    this->player2Health = createTextTexture(this->renderer, std::to_string(this->worm2->getHealth()), {0, 0, 0, 255}, 70, 50);
+    
+    this->worm1 = new Worm(this->renderer, 70, 0, true);
+    this->worm2 = new Worm(this->renderer, 1100, 0, false);
+
+    this->timer_text = createTextTexture(this->renderer, std::to_string((int)(timer / FRAMERATE)), {255, 0, 0, 255});
+
+    this->player1_name = createTextTexture(this->renderer, "player1", {0, 0, 0, 255});
+    this->player2_name = createTextTexture(this->renderer, "player2", {0, 0, 0, 255});
+    this->player1_health = createTextTexture(this->renderer, std::to_string(this->worm1->getHealth()), {0, 0, 0, 255});
+    this->player2_health = createTextTexture(this->renderer, std::to_string(this->worm2->getHealth()), {0, 0, 0, 255});
+    this->bullet_sprite = this->loadMedia(this->renderer, "./assets/assets/sprites/projectile_bullet.bmp", BULLET_WIDTH, BULLET_HEIGHT);
+    this->rocket_sprite = this->loadMedia(this->renderer, "./assets/assets/sprites/projectile_rocket.bmp", ROCKET_WIDTH, ROCKET_HEIGHT);
+
     this->curr_worm = this->worm1;
     this->ground = new Ground();
-    this->platform1 = new Platform(200,200);
-    this->platform2 = new Platform(700,200);
 }
 
 bool WindowApp::init()
@@ -63,48 +67,46 @@ void WindowApp::loadFont(const std::string &fontPath, int fontSize)
     }
 }
 
-SDL_Texture *WindowApp::createTextTexture(SDL_Renderer *renderer, const std::string &text, SDL_Color textColor, int surfaceWidth, int surfaceHeight)
+SDL_Texture *WindowApp::createTextTexture(SDL_Renderer *renderer, const std::string &text, SDL_Color textColor)
 {
-    SDL_Surface *textSurface = TTF_RenderText_Blended_Wrapped(gFont, text.c_str(), textColor, surfaceWidth);
-    if (textSurface == nullptr)
+    SDL_Surface *text_surface = TTF_RenderText_Solid(gFont, text.c_str(), textColor);
+    if (text_surface == nullptr)
     {
         std::cout << "Failed to render text surface. TTF Error: " << TTF_GetError() << std::endl;
         return nullptr;
     }
 
-    // Create a new surface with the desired width and height
-    SDL_Surface *scaledSurface = SDL_CreateRGBSurfaceWithFormat(0, surfaceWidth, surfaceHeight, 32, textSurface->format->format);
-    if (scaledSurface == nullptr)
-    {
-        std::cout << "Failed to create scaled surface. SDL Error: " << SDL_GetError() << std::endl;
-        SDL_FreeSurface(textSurface);
-        return nullptr;
-    }
-
-    // Copy the text surface onto the scaled surface, scaling it if necessary
-    SDL_Rect targetRect = {0, 0, surfaceWidth, surfaceHeight};
-    SDL_BlitScaled(textSurface, nullptr, scaledSurface, &targetRect);
-
-    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, scaledSurface);
-    if (textTexture == nullptr)
+    SDL_Texture *text_texture = SDL_CreateTextureFromSurface(renderer, text_surface);
+    if (text_texture == nullptr)
     {
         std::cout << "Failed to create texture from rendered text. SDL Error: " << SDL_GetError() << std::endl;
-        SDL_FreeSurface(textSurface);
-        SDL_FreeSurface(scaledSurface);
+        SDL_FreeSurface(text_surface);
         return nullptr;
     }
 
-    SDL_FreeSurface(textSurface);
-    SDL_FreeSurface(scaledSurface);
+    SDL_FreeSurface(text_surface);
 
-    return textTexture;
+    return text_texture;
 }
 
-void WindowApp::renderText(SDL_Renderer *renderer, SDL_Texture *texture, int x, int y)
-{
-    SDL_Rect renderQuad = {x, y, 0, 0};
-    SDL_QueryTexture(texture, nullptr, nullptr, &renderQuad.w, &renderQuad.h);
-    SDL_RenderCopy(renderer, texture, nullptr, &renderQuad);
+SDL_Texture* WindowApp::loadMedia(SDL_Renderer *renderer, const char* path, int width, int height){
+
+    // Load splash image
+    SDL_Surface *imageSurface = SDL_LoadBMP(path);
+    if (!imageSurface)
+    {
+        std::cout << "Failed to load image: " << IMG_GetError() << std::endl;
+        exit(-1);
+    }
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    // Create texture from surface
+    SDL_Surface* resizedSurface = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
+    SDL_BlitScaled(imageSurface, nullptr, resizedSurface, nullptr);
+    SDL_Texture *sprite = SDL_CreateTextureFromSurface(renderer, resizedSurface);
+    SDL_QueryTexture(sprite, nullptr, nullptr, &width, &height);
+    SDL_FreeSurface(resizedSurface);
+    SDL_FreeSurface(imageSurface);
+    return sprite;
 }
 
 void WindowApp::renderBar()
@@ -123,33 +125,42 @@ void WindowApp::renderBar()
     SDL_RenderFillRect(this->renderer, &empty_rect);
 }
 
-void WindowApp::close()
+void WindowApp::renderWormsAmunitions()
 {
-    this->ground->close();
+    std::string worm1_weapon = this->worm1->getWeapon();
+    int worm1_amunitions = this->worm1->getWeaponAmunition();
+    std::string worm2_weapon = this->worm2->getWeapon();
+    int worm2_amunitions = this->worm2->getWeaponAmunition();
+    SDL_Rect rect;
+    SDL_Texture* sprite;
 
-    this->worm1->close();
-    this->worm1 = nullptr;
-    this->worm2->close();
-    this->worm2 = nullptr;
-    this->curr_worm = nullptr;
+    if (!worm1_weapon.compare("bazooka")){
+        rect = {PLAYER1_AMUNITION_X, PLAYER1_AMUNITION_Y, ROCKET_WIDTH, ROCKET_HEIGHT};
+        sprite = this->rocket_sprite;    
+    }
+    else{
+        rect = {PLAYER1_AMUNITION_X, PLAYER1_AMUNITION_Y, BULLET_WIDTH, BULLET_HEIGHT};
+        sprite = this->bullet_sprite;    
+    }
 
-    SDL_DestroyTexture(this->player1Health);
-    SDL_DestroyTexture(this->player2Health);
+    for (int i=0; i<worm1_amunitions; i++){
+        SDL_RenderCopyEx(this->renderer, sprite, nullptr, &rect, AMUNITION_DISPLAY_ANGLE, nullptr, SDL_FLIP_NONE);
+        rect.x += AMUNITION_DISPLAY_SEPARATION;
+    }
+    
+    if (!worm2_weapon.compare("bazooka")){
+        rect = {PLAYER2_AMUNITION_X, PLAYER2_AMUNITION_Y, ROCKET_WIDTH, ROCKET_HEIGHT};
+        sprite = this->rocket_sprite;    
+    }
+    else{
+        rect = {PLAYER2_AMUNITION_X, PLAYER2_AMUNITION_Y, BULLET_WIDTH, BULLET_HEIGHT};
+        sprite = this->bullet_sprite;    
+    }
 
-    SDL_DestroyTexture(this->timerText);
-    // Destroy renderer
-    SDL_DestroyRenderer(renderer);
-    renderer = NULL;
-
-    // Destroy window
-    SDL_DestroyWindow(gWindow);
-    gWindow = NULL;
-
-    TTF_CloseFont(this->gFont);
-    this->gFont = NULL;
-
-    // Quit SDL subsystems
-    SDL_Quit();
+    for (int i=0; i<worm2_amunitions; i++){
+        SDL_RenderCopyEx(this->renderer, sprite, nullptr, &rect, AMUNITION_DISPLAY_ANGLE, nullptr, SDL_FLIP_NONE);
+        rect.x += AMUNITION_DISPLAY_SEPARATION;
+    }
 }
 
 void WindowApp::render()
@@ -160,19 +171,22 @@ void WindowApp::render()
 
     // Render the scene
     this->ground->render(this->renderer);
-    this->platform1->render(this->renderer);
-    this->platform2->render(this->renderer);
+
     this->worm1->render(this->renderer);
     this->worm2->render(this->renderer);
+
     if (this->curr_projectile != nullptr)
         this->curr_projectile->render(this->renderer);
-    this->renderText(this->renderer, this->timerText, 620, 20);
-    this->renderText(this->renderer, this->player1Name, 30, 10);
-    this->renderText(this->renderer, this->player2Name, 1180, 10);
-    this->renderText(this->renderer, this->player1Health, 30, 20);
-    this->renderText(this->renderer, this->player2Health, 1180, 20);
-    this->renderText(this->renderer, this->timerText, 620,20);
+    
+    SDL_RenderCopy(this->renderer, this->timer_text, NULL, &this->timer_rect);
+    SDL_RenderCopy(this->renderer, this->player1_name, NULL, &this->player1_name_rect);
+    SDL_RenderCopy(this->renderer, this->player2_name, NULL, &this->player2_name_rect);
+    SDL_RenderCopy(this->renderer, this->player1_health, NULL, &this->player1_health_rect);
+    SDL_RenderCopy(this->renderer, this->player2_health, NULL, &this->player2_health_rect);
+
     this->renderBar();
+
+    this->renderWormsAmunitions();
 
     // Update the screen
     SDL_RenderPresent(this->renderer);
@@ -181,33 +195,30 @@ void WindowApp::render()
 void WindowApp::update()
 {
     if (this->timer == 0)
-    {
-        this->curr_worm->setVSPeed(WORM_FALLING_SPEED);
+    {   
         this->curr_worm->setHSPeed(0);
+        this->curr_worm->setVSPeed(WORM_FALLING_SPEED);
         if (this->curr_worm == this->worm1)
-        {
             this->curr_worm = this->worm2;
-        }
         else
-        {
             this->curr_worm = this->worm1;
-        }
 
         curr_worm_shooting = false;
 
         curr_worm_has_aimed = false;
 
         shooting_power = MIN_SHOOTING_POWER;
-
-        curr_projectile = nullptr;
+        
+        if (curr_projectile != nullptr)
+            this->explodeProjectile(false, false);
 
         this->timer = TIMER;
     }
 
     this->timer--;
-    SDL_DestroyTexture(this->timerText);
-    this->timerText = createTextTexture(this->renderer, std::to_string((int)(this->timer/FRAMERATE)), {255,0,0, 255}, 70,50);
-    
+    SDL_DestroyTexture(this->timer_text);
+    this->timer_text = createTextTexture(this->renderer, std::to_string((int)(this->timer/FRAMERATE)), {255,0,0, 255});
+
     this->worm1->update(ground->getPoints(), this->worm2->getHitbox());
     if (this->worm1->getHealth() <= 0)
         this->quit = true;
@@ -401,10 +412,10 @@ void WindowApp::explodeProjectile(bool hit1, bool hit2)
         }
     }
     
-    SDL_DestroyTexture(this->player1Health);
-    SDL_DestroyTexture(this->player2Health);
-    this->player1Health = createTextTexture(this->renderer, std::to_string(this->worm1->getHealth()), {0, 0, 0, 255}, 70, 50);
-    this->player2Health = createTextTexture(this->renderer, std::to_string(this->worm2->getHealth()), {0, 0, 0, 255}, 70, 50);
+    SDL_DestroyTexture(this->player1_health);
+    SDL_DestroyTexture(this->player2_health);
+    this->player1_health = createTextTexture(this->renderer, std::to_string(this->worm1->getHealth()), {0, 0, 0, 255});
+    this->player2_health = createTextTexture(this->renderer, std::to_string(this->worm2->getHealth()), {0, 0, 0, 255});
 
     delete this->curr_projectile;
     this->curr_projectile = nullptr;

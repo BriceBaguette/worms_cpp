@@ -20,7 +20,8 @@ class Projectile{
         virtual int getDamage();
 
         virtual ~Projectile() {
-        SDL_DestroyTexture(sprite);
+            SDL_DestroyTexture(sprite);
+            explosion_zone_template.clear();
         }
 
     protected:

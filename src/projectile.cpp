@@ -108,7 +108,7 @@ void Projectile::computeStartingPosition(std::tuple<bool, double, SDL_Rect, SDL_
     double worm_center_y = worm_rect.y + worm_rect.h/2.;
     double weapon_center_x = weapon_rect.x + weapon_rect.w/2.;
     double weapon_center_y = weapon_rect.y + weapon_rect.h/2.;
-
+    //direct computation if projectile thrown purely horizontally or vertically
     if (this->angle == 0){
         if (this->flip){
             this->center_x = (double) worm_center_x + worm_rect.w/2. + this->width/2.;
@@ -135,7 +135,7 @@ void Projectile::computeStartingPosition(std::tuple<bool, double, SDL_Rect, SDL_
     int mod = -1;
     if (this->flip)
         mod = 1;
-
+    //move along the straight curve with the same angle as the weapon and passing by its center until a point for the middle of the projectile for which the projectile would be outside the worm's hit box is reached
     double slope = (mod*-1.) * tan(this->angle * M_PI/180.0);
     double c_x = weapon_center_x + mod*1;
     bool ok = false;
@@ -154,7 +154,7 @@ void Projectile::computeStartingPosition(std::tuple<bool, double, SDL_Rect, SDL_
 }
 
 void Projectile::setExplosionZoneTemplate(int explosion_radius){
-    
+    //Set of dots which would be destroyed if the projectile exploded with its center in (0, 0)
     std::vector<SDL_Point> explosion_zone_template;
     if(explosion_radius == 0)
         this->explosion_zone_template = explosion_zone_template;
@@ -195,7 +195,7 @@ Bullet::Bullet(std::tuple<bool, double, SDL_Rect, SDL_Rect>& fire_params, double
 }
 
 std::vector<SDL_Point> Bullet::getExplosionZone(){
-    
+    //no explosion zone for the bullet
     std::vector<SDL_Point> vector;
     return vector;
 }
@@ -220,7 +220,7 @@ Rocket::Rocket(std::tuple<bool, double, SDL_Rect, SDL_Rect>& fire_params, double
 }
 
 std::vector<SDL_Point> Rocket::getExplosionZone(){
-
+    //translate every points of the explosion zone template by the vector going from (0, 0) to the center of the projectile
     std::vector<SDL_Point> vector;
 
     for (const auto& point :  this->explosion_zone_template)
