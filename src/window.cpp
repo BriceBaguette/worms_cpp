@@ -133,6 +133,9 @@ void WindowApp::close()
     this->worm2 = nullptr;
     this->curr_worm = nullptr;
 
+    SDL_DestroyTexture(this->player1Health);
+    SDL_DestroyTexture(this->player2Health);
+
     SDL_DestroyTexture(this->timerText);
     // Destroy renderer
     SDL_DestroyRenderer(renderer);
@@ -212,14 +215,16 @@ void WindowApp::update()
         this->quit = true;
 
     if (this->curr_projectile != nullptr && !this->curr_projectile->update())
-        explodeProjectile(false);
+        explodeProjectile(false, false);
 
     if(this->curr_projectile != nullptr){
-        SDL_Rect hitbox = this->worm1->getHitbox();
-        bool hit = this->curr_projectile->checkCollision(hitbox);
-        if (hit || this->curr_projectile->checkCollision(ground->getPoints()))
+        SDL_Rect hitbox1 = this->worm1->getHitbox();
+        SDL_Rect hitbox2 = this->worm2->getHitbox();
+        bool hit1 = this->curr_projectile->checkCollision(hitbox1);
+        bool hit2 = this->curr_projectile->checkCollision(hitbox2);
+        if (hit1 || hit2 || this->curr_projectile->checkCollision(ground->getPoints()))
         {
-            explodeProjectile(hit);
+            explodeProjectile(hit1, hit2);
         }
     }
 
@@ -280,11 +285,13 @@ void WindowApp::event()
                         else
                             this->curr_projectile = new Bullet(fire_params, this->shooting_power, this->renderer);
 
-                        SDL_Rect hitbox = this->worm1->getHitbox();
-                        bool hit = this->curr_projectile->checkCollision(hitbox);
-                        if (hit || this->curr_projectile->checkCollision(ground->getPoints()))
+                        SDL_Rect hitbox1 = this->worm1->getHitbox();
+                        bool hit1 = this->curr_projectile->checkCollision(hitbox1);
+                        SDL_Rect hitbox2 = this->worm2->getHitbox();
+                        bool hit2 = this->curr_projectile->checkCollision(hitbox2);
+                        if (hit1 || hit2 || this->curr_projectile->checkCollision(ground->getPoints()))
                         {
-                            explodeProjectile(hit);
+                            explodeProjectile(hit1, hit2);
                         }
                         
                         this->shooting_power = MIN_SHOOTING_POWER;
@@ -369,16 +376,35 @@ bool WindowApp::getQuit()
     return this->quit;
 }
 
-void WindowApp::explodeProjectile(bool hit)
+void WindowApp::explodeProjectile(bool hit1, bool hit2)
 {
     std::vector<SDL_Point> explosion_zone = this->curr_projectile->getExplosionZone();
     this->ground->destroyPoints(explosion_zone);
-    if (hit || this->worm1->checkCollision(explosion_zone))
-    {
-        this->worm1->setDamage(this->curr_projectile->getDamage());
-        if (this->worm1->getHealth() <= 0)
-            this->quit = true;
+    for (int i=1; i<3; i++){
+        Worm* worm;
+        bool hit;
+        if (i == 1){
+            worm = this->worm1;
+            hit = hit1;
+        }
+        else {
+            worm = this->worm2;
+            hit = hit2;
+        }
+
+        if (hit || worm->checkCollision(explosion_zone))
+        {
+            worm->setDamage(this->curr_projectile->getDamage());
+            if (worm->getHealth() <= 0)
+                this->quit = true;
+        }
     }
+    
+    SDL_DestroyTexture(this->player1Health);
+    SDL_DestroyTexture(this->player2Health);
+    this->player1Health = createTextTexture(this->renderer, std::to_string(this->worm1->getHealth()), {0, 0, 0, 255}, 70, 50);
+    this->player2Health = createTextTexture(this->renderer, std::to_string(this->worm2->getHealth()), {0, 0, 0, 255}, 70, 50);
+
     delete this->curr_projectile;
     this->curr_projectile = nullptr;
 }

@@ -54,7 +54,7 @@ private:
 
     Projectile* curr_projectile = nullptr;
 
-    void explodeProjectile(bool hit);
+    void explodeProjectile(bool hit1, bool hit2);
 
 
     bool init();
